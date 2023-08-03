@@ -30,9 +30,12 @@ A, C, G, T 각각 문자열 돌면서 숫자 세
 a, c, g, t 보다 cnt가 적다면 false;
 많다면 ans += 1;
 
-해시맵써가지고 하나하나 인덱스에 넣어놓으면 된다 ㅎ
-get했을때 바로 인덱스 나옴 ㅎ
-아;; 아직 정답은 아닌듯;;
+하.. 역시 시간초과가 난다.
+슬라이딩 윈도우가 내가 알던 방식이 아니였나보다.
+검색해보고 슬라이딩 윈도우와 다찬님이 말한
+해시맵을 사용해 보겠다.
+슬라이딩 윈도우는 원래 검색 해보았던 자료를 버리지 않는 것이 핵심인 것 같다.
+이를 통해서 연산 속도를 줄이는 것이 관건인 알고리즘이다.
 
 
 
@@ -40,6 +43,7 @@ get했을때 바로 인덱스 나옴 ㅎ
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.HashMap;
 import java.util.StringTokenizer;
 
 public class BJ_S2_12891_DNA비밀번호 {
@@ -47,11 +51,12 @@ public class BJ_S2_12891_DNA비밀번호 {
 	static StringTokenizer tokens;
 	static StringBuilder builder = new StringBuilder();
 	
-	static int S, P, a,c,g,t;
+	static int S, P, a,c,g,t, ans;
 	static String DNA;
 	static String slideDNA;
 	static char temp;
-
+	static HashMap<Character, int[]> map = new HashMap<>();
+	static char[] checkDNA = {'A', 'C', 'G', 'T'};
 	public static void main(String[] args) throws IOException {
 		// TODO Auto-generated method stub
 		tokens = new StringTokenizer(input.readLine());
@@ -61,22 +66,67 @@ public class BJ_S2_12891_DNA비밀번호 {
 		DNA = input.readLine();
 		
 		tokens = new StringTokenizer(input.readLine());
-		a = Integer.parseInt(tokens.nextToken());
-		c = Integer.parseInt(tokens.nextToken());
-		g = Integer.parseInt(tokens.nextToken());
-		t = Integer.parseInt(tokens.nextToken());
 		
-		for(int i = 0; i <= S-P; i += S-P) {
-			slideDNA = DNA.substring(i, P+i); // 잘 잘리네^^
-			for(int j=0; j<slideDNA.length(); j++) {
-				temp = slideDNA.charAt(j);
-				if(temp == 'A') {
-					
-				}
+		for(char c: checkDNA) { // 현재 문자 수 카운트, 꼭 서야하는 목표 카운트
+			map.put(c, new int[] {0, Integer.parseInt(tokens.nextToken())});
+		}
+		
+		for(int i=0; i<P; i++) {
+			//DNA의 문자를 읽어와서 이에 해당하는 인덱스를 ++
+			map.get(DNA.charAt(i))[0]+=1;
+		}
+		if(countCheck()) {
+			ans++;
+		}
+		// 왼쪽으로는 하나씩 깎고 오른쪽으로 하나씩 전진
+		
+		for(int i=0; i<S-P; i++) {
+			map.get(DNA.charAt(i))[0]-=1;
+			map.get(DNA.charAt(P+i))[0]+=1;
+			if(countCheck()) {
+				ans++;
 			}
 		}
+		System.out.println(ans);
+		
+//		for(int i = 0; i <= S-P; i++) {
+//			int tA = a, tC = c, tG = g, tT = t;
+//			slideDNA = DNA.substring(i, P+i); // 잘 잘리네^^
+//			for(int j=0; j<slideDNA.length(); j++) {
+//				temp = slideDNA.charAt(j);
+//				switch (temp) {
+//				case 'A':
+//					tA--;
+//					break;
+//				case 'C':
+//					tC--;
+//					break;
+//				case 'G':
+//					tG--;
+//					break;
+//				case 'T':
+//					tT--;
+//					break;
+//
+//				default:
+//					break;
+//				}
+//			}
+//			if(tA<=0 && tC<=0 && tG<=0 && tT<=0) {
+//				ans++;
+//			}
+//		}
+//		System.out.println(ans);
 		 
 		
+	}
+	public static boolean countCheck() {
+		for(char word: checkDNA) {
+			if(map.get(word)[0] < map.get(word)[1]) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 }
