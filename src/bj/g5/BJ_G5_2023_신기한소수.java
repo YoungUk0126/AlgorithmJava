@@ -4,7 +4,7 @@ package bj.g5;
 @since 2023. 8. 3.
 @see https://www.acmicpc.net/problem/2023
 @git
-@performance
+@performance 76ms
 @category #
 @note
 
