@@ -11,9 +11,9 @@ import java.util.StringTokenizer;
 /**
 @author 김영욱
 @since 2023. 8. 4.
-@see
+@see https://www.acmicpc.net/problem/1021
 @git
-@performance
+@performance 80ms
 @category #
 @note
  N개의 원소를 포함하고 있는 양방향 순환 큐를 가지고 있다.
@@ -28,6 +28,10 @@ import java.util.StringTokenizer;
  첫 번째 원소가 M의 첫번쨰 원소랑 같으면 pollfirst
  아니라면 중앙 값을 기준으로 더 빠른 연산을 실행(왼쪽이냐 오른쪽이냐)
  
+ deque를 쓰려고 했는데 중앙값을 구하는 방법이 도저히 떠오르지 않았다.
+ 인터넷을 살짝 보니 LinkedList로 풀더라...;;;
+ 그래서 LinkedList로 풀었더니 바로 실행이 되었다.
+ 
  
  
 */
@@ -41,12 +45,10 @@ public class BJ_S3_1021_회전하는큐 {
 	static int count;
 	
 	static int[] targetArr;
-	static int ansFlag;
 	
 	// 아직 미해결
 	public static void main(String[] args) throws IOException {
 		// TODO Auto-generated method stub
-		ansFlag = 0;
 		count = 0;
 		tokens = new StringTokenizer(input.readLine());
 		N = Integer.parseInt(tokens.nextToken());
@@ -76,7 +78,7 @@ public class BJ_S3_1021_회전하는큐 {
 			} else {
 				halfIdx = deque.size()/2;
 			}
-			// 타겟 인덱스가 중앙값보다 크다면
+			// 타겟 인덱스가 중앙값보다 작다면
 			if(targetIdx <= halfIdx) {
 				for(int j=0; j<targetIdx; j++) {
 					count++;
@@ -90,6 +92,7 @@ public class BJ_S3_1021_회전하는큐 {
 					deque.offerFirst(temp);
 				}
 			}
+			deque.pollFirst();
 		}
 		System.out.println(count);
 		
