@@ -10,10 +10,10 @@ public class 좋은아침Sol {
         // makePermutation(0, new char[3], new boolean[src.length]);
 
         // 4C3을 구하는 코드를 작성해보자.
-        //makeCombination(0, 0, new char[3]);
+        makeCombination(0, 0, new char[3]);
         // 부분집합을 구해보자.
         //makeSubset1(0, new boolean[4]);
-        makeSubset2();
+//        makeSubset2();
     }
 
     static void makePermutation(final int nthChoice, char[] choosed, boolean[] visited) {

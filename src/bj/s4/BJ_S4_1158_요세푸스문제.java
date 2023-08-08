@@ -13,7 +13,7 @@ import java.util.StringTokenizer;
 @since 2023.08.07
 @see https://www.acmicpc.net/problem/1158
 @git
-@performance
+@performance 484ms
 @category #
 @note
 1번부터 N번까지 N명의 사람이 원을 이루면서 앉아있고, 양의 정수 K가 주어진다.

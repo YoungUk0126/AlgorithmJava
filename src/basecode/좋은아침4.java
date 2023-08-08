@@ -9,7 +9,8 @@ public class 좋은아침4 {
 		// TODO Auto-generated method stub
 		//4n3을 뽑아보자.
 		
-		makePermutation(0, new char[3], new boolean[4]);
+//		makePermutation(0, new char[3], new boolean[4]);
+		makeCombination(0, 0, new char[3]);
 
 	}
 	
@@ -29,6 +30,19 @@ public class 좋은아침4 {
 				makePermutation(cnt + 1, choosed, isVisited);
 				isVisited[i] = false;
 			}
+		}
+	}
+	
+	static void makeCombination(int cnt, int startIdx, char[] choosed) {
+		
+		if(cnt == choosed.length) {
+			System.out.println(Arrays.toString(choosed));
+			return;
+		}
+		
+		for(int i=startIdx; i<src.length; i++) {
+			choosed[cnt] = src[i];
+			makeCombination(cnt + 1, i + 1, choosed);
 		}
 	}
 
