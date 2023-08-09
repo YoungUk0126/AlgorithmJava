@@ -21,6 +21,7 @@ R을 줄일 필요가 있어.
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Arrays;
 import java.util.StringTokenizer;
 
 public class BJ_G5_16927_배열돌리기2 {
@@ -39,6 +40,7 @@ public class BJ_G5_16927_배열돌리기2 {
 		N = Integer.parseInt(tokens.nextToken());
 		M = Integer.parseInt(tokens.nextToken());
 		R = Integer.parseInt(tokens.nextToken());
+		int start = 0;
 		
 		max = Math.max(N, M);
 		min = Math.min(N, M);
@@ -56,20 +58,76 @@ public class BJ_G5_16927_배열돌리기2 {
 		while(min>0) {
 			int maxRotate = (max*2) + ((min-2)*2);
 			repeat = R%maxRotate;
+			rotate(start, start, maxRotate);
 			
-			rotate();
-			
-			
+			start++;
 			max -= 2;
 			min -= 2;
 		}
+		
+		for(int[] row: ans) {
+			for(int col: row) {
+				builder.append(col).append(" ");
+			}
+			builder.append("\n");
+		}
+		System.out.println(builder);
+		
 	}
 	
-	static void rotate() {
+	static void rotate(int startX, int startY, int tempLength) {
 		// repeat만큼 deltas더해서 돌려준다.
+		int x = startX;
+		int y = startY;
+		int temp[] = new int[tempLength];
+		temp[0] = arr[x][y];
+		int cnt=1;
+		int direction = 0;
 		
+		// 1차원 배열에 테두리 담기
+		while(cnt<tempLength) {
+			int nx= x + deltas[direction][0];
+			int ny= y + deltas[direction][1];
+			
+			if(0+startX<=nx && nx < N-startX && 0+startY<=ny && ny < M-startY) {
+				temp[cnt++] = arr[nx][ny];
+				x = nx;
+				y = ny;
+			} else {
+				direction = (direction+1)%4;
+			}
+		}
+		cnt = 0;
+		x = startX;
+		y = startY;
+		direction = 0;
+		// 시작 위치 찾기
+		while(cnt<repeat) {
+			int nx= x + deltas[direction][0];
+			int ny= y + deltas[direction][1];
+			if(0+startX<=nx && nx < N-startX && 0+startY<=ny && ny < M-startY) {
+				x = nx;
+				y = ny;
+				cnt++;
+			} else {
+				direction = (direction+1)%4;
+			}
+		}
 		
-		
+		ans[x][y] = temp[0];
+		cnt = 1;
+		// 값 넣기
+		while(cnt<tempLength) {
+			int nx= x + deltas[direction][0];
+			int ny= y + deltas[direction][1];
+			if(0+startX<=nx && nx < N-startX && 0+startY<=ny && ny < M-startY) {
+				x = nx;
+				y = ny;
+				ans[x][y] = temp[cnt++];
+			} else {
+				direction = (direction+1)%4;
+			}
+		}
 	}
 
 }
