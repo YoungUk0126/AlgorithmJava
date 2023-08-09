@@ -14,6 +14,7 @@ public class BJ_G5_2467_용액 {
 	static int sum;
 	static int[] water;
 	static int min;
+	static int ansLeft, ansRight;
 	public static void main(String[] args) throws IOException {
 		// TODO Auto-generated method stub
 		N = Integer.parseInt(input.readLine());
@@ -30,6 +31,11 @@ public class BJ_G5_2467_용액 {
 		
 		while(left<right) {
 			sum = water[left] + water[right];
+			if(min >= Math.abs(sum)) {
+				min = Math.abs(sum);
+				ansLeft = water[left];
+				ansRight = water[right];
+			}
 			if(sum == 0) {
 				builder.append(water[left]).append(" ").append(water[right]);
 				break;
@@ -39,10 +45,9 @@ public class BJ_G5_2467_용액 {
 			} else {
 				left++;
 			}
-			if(min > Math.abs(sum)) {
-				min = sum;
-			}
+			
 		}
+		builder.append(ansLeft).append(" ").append(ansRight).append("\n");
 		System.out.println(builder);
 		
 	}
