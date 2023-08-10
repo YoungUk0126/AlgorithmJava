@@ -41,7 +41,6 @@ public class SW_D4_정사각형방 {
 	static int cnt;
 	static int maxCnt;
 	
-//	static boolean visited[][];
 	static Stack<int []> stack;
 	static int deltas[][] = {{-1,0}, {1,0}, {0,-1}, {0,1}};
 
@@ -56,7 +55,6 @@ public class SW_D4_정사각형방 {
 			stack = new Stack<int[]>();
 			N = Integer.parseInt(input.readLine());
 			map = new int[N][N];
-//			visited = new boolean[N][N];
 			
 			for(int i=0; i<N; i++) {
 				tokens = new StringTokenizer(input.readLine());
