@@ -29,6 +29,14 @@ r c s => (r-s, c-s)부터 (r+s, c+s)
 이번에 연산 횟수는 6번밖에 안되니까 큐를 이용해서 풀자
 왜냐하면 각 연산마다 한번씩 움직이는거니까.
 
+근데 r c s 가 2번 이상 들어오면
+r1 c1 s1
+r2 c2 s2
+
+1부터 하는 거랑
+2부터 하는 거랑 결과가 달라
+각각 구해서 최솟값 구해줘야돼.
+
 */
 public class BJ_G4_17406_배열돌리기4 {
 	static BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
