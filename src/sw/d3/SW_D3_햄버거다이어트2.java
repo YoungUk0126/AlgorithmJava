@@ -11,7 +11,7 @@ import java.util.StringTokenizer;
 @since 2023. 08. 10
 @see https://swexpertacademy.com/main/talk/solvingClub/problemView.do?solveclubId=AYlH3z4K78kDFAVR&contestProbId=AWT-lPB6dHUDFAVT&probBoxId=AYnN7JhqMPoDFAUe&type=PROBLEM&problemBoxTitle=0807%EC%A3%BC&problemBoxCnt=7
 @git
-@performance
+@performance 270ms
 @category #
 @note
 공간 복잡도는 신경 쓸 필요 없음
