@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayDeque;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.Queue;
 import java.util.StringTokenizer;
 
@@ -81,16 +82,26 @@ public class BJ_G4_17406_배열돌리기4 {
 		orders = new int[K][3];
 		ordersPermutation = new int[K];
 		for(int i=0; i<K; i++) {
-			ordersPermutation[i] = i;
-		}
-		for(int i=0; i<K; i++) {
 			tokens = new StringTokenizer(input.readLine());
 			// r c s 값 미리 저장
 			orders[i][0] = Integer.parseInt(tokens.nextToken());
 			orders[i][1] = Integer.parseInt(tokens.nextToken());
 			orders[i][2] = Integer.parseInt(tokens.nextToken());
+			
+			ordersPermutation[i] = i;
 		}
+		ans = new int[N][M];
+		min = Integer.MAX_VALUE;
 		do {
+			// permutation의 순서 구하기는 완벽함.
+//			for(int i=0; i<K; i++) {
+//				System.out.print("permutations : "+ordersPermutation[i]+"   ");
+//			}
+//			System.out.println();
+			//ans에 arr복사
+			for(int i=0; i<arr.length; i++) {
+				System.arraycopy(arr[i], 0, ans[i], 0, ans[i].length);
+			}
 			for(int i=0; i<K; i++) {
 				int now = ordersPermutation[i];
 				r = orders[now][0];
@@ -98,76 +109,85 @@ public class BJ_G4_17406_배열돌리기4 {
 				s = orders[now][2];
 				x1 = r-s-1; y1 = c-s-1;
 				x2 = r+s; y2 = c+s;
-				ans = new int[N][M];
 				
 //				System.out.println(r + " " + c + " " + s);
 				//양변 큰값 작은값 구함
 				int under = Math.min(x2 - x1, y2 - y1);
-				int top = Math.min(x2-x1, y2 - y1);
+				int top = Math.max(x2-x1, y2 - y1);
 				int start = 0;
 				while(under>0) {
 					int tempLength = ((top + under)*2)-4;
-					rotate(x1+start, y1+start, x2-start, y2-start, tempLength);
+					if(tempLength > 0) // 0보다 작으면 반복을 돌 필요가 없음.
+						rotate(x1+start, y1+start, x2-start, y2-start, tempLength);
 					
 					start++;
 					top -= 2;
 					under -= 2;
 				}
-				min = Integer.MAX_VALUE;
-				for(int r=0; r<N; r++) {
-					int sum=0;
-					for(int c=0; c<M; c++) {
-						System.out.print(ans[r][c] + " ");
-						sum+= ans[r][c];
-					}
-					System.out.println("sum :"+sum);
-					min = Math.min(sum, min);
+			}
+			// 최솟값 구하기
+			int sum;
+			for(int r=0; r<N; r++) {
+				sum = 0;
+				for(int c=0; c<M; c++) {
+					sum+= ans[r][c];
 				}
+				min = Math.min(sum, min);
 			}
 		}while(nextPermutation(ordersPermutation));
-		System.out.println("min : "+min);
+		System.out.println(min);
 	
 	}
 
 	static void rotate(int x1, int y1, int x2, int y2, int tempLength) {
-		int move=0;
+		int move=1;
 		
 		int x = x1; int y = y1;
 		int d = 0;
+		queue.offer(ans[x][y]);
 		while(tempLength>move) {
-			System.out.println("x : "+x+"  y:"+y);
-			queue.offer(arr[x][y]);
 			int nx = x + deltas[d][0];
 			int ny = y + deltas[d][1];
 			if(x1<=nx && nx<x2 && y1<=ny && ny<y2) {
 				x = nx;
 				y = ny;
+				queue.offer(ans[x][y]);
 				move++;
 			} else {
 				d = (d+1) % 4;
 			}
 		}
+//		Iterator iter = queue.iterator();
+//		while(iter.hasNext())
+//			System.out.print(iter.next() + " ");
+//		System.out.println();
 		
-		System.out.println("done");
-		
-		move = 0;
+		move = 1;
 		x = x1; y = y1 + 1;
 		d = 0;
-		
+		ans[x][y] = queue.poll();
 		while(tempLength>move) {
-			System.out.println("x : "+x+"  y:"+y);
-			if(!queue.isEmpty()) ans[x][y] = queue.poll();
 			int nx = x + deltas[d][0];
 			int ny = y + deltas[d][1];
 			if(x1<=nx && nx<x2 && y1<=ny && ny<y2) {
 				x = nx;
 				y = ny;
+				ans[x][y] = queue.poll();
 				move++;
 			} else {
 				d = (d+1) % 4;
 			}
 		}
-		
+//		System.out.println("ans : ");
+//		for(int r=0; r<N; r++) {
+//			int sum=0;
+//			for(int c=0; c<M; c++) {
+//				System.out.print(ans[r][c] + " ");
+//			}
+//			System.out.println();
+//		}
+//		System.out.println();
+//		System.out.println();
 	}
 	
 	private static boolean nextPermutation(int[] orders) {
