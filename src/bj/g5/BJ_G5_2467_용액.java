@@ -28,7 +28,9 @@ public class BJ_G5_2467_용액 {
 		for(int i=0; i<N; i++) {
 			water[i] = Integer.parseInt(tokens.nextToken());
 		}
-		
+		// 테케는 맞는데 히든 테케가 틀림
+		// 모든 용액이 양수나 음수로 들어오는 것도 테스트 해봐야됨
+		// ? 맞는데?
 		while(left<right) {
 			sum = water[left] + water[right];
 			if(min >= Math.abs(sum)) {
@@ -36,11 +38,7 @@ public class BJ_G5_2467_용액 {
 				ansLeft = water[left];
 				ansRight = water[right];
 			}
-			if(sum == 0) {
-				builder.append(water[left]).append(" ").append(water[right]);
-				break;
-			}
-			else if(sum > 0) {
+			if(sum > 0) {
 				right--;
 			} else {
 				left++;
