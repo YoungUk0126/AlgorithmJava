@@ -14,7 +14,7 @@ import java.util.StringTokenizer;
 @since 2023. 08. 10
 @see https://www.acmicpc.net/problem/17406
 @git
-@performance
+@performance 312ms
 @category #
 @note
 시간 : 1초
