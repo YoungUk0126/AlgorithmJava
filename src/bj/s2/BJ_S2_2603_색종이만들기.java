@@ -51,30 +51,32 @@ public class BJ_S2_2603_색종이만들기 {
 				board[i][j] = Integer.parseInt(tokens.nextToken());
 			}
 		}
-
+		solve(0,0,N);
+		System.out.println(cntWhite);
+		System.out.println(cntBlue);
 	}
 	
-	static void solve(int x1, int y1, int x2, int y2) {
-		if((x2 - x1) == 1) {
-			if(board[x1][y1] == 1) {
-				cntBlue++;
-			} else {
-				cntWhite++;
-			}
+	static void solve(int x, int y, int size) {
+		if(colorCheck(x, y, size)) {
+			if(board[x][y] == 1) cntBlue++;
+			else cntWhite++;
 			return;
 		}
-		int color = board[x1][y1];
-		for(int x=x1; x<x2; x++) {
-			for(int y=y1; y<y2; y++) {
-				if(board[x][y] != color) {
-					solve(x1, y1, x2/2, y2/2);
-					solve(x1,y1/2, x2/2, y2);
-					solve(x2/2, y1, x2, y2/2);
-					solve(x2/2, y2/2, x2, y2);
-					break;
-				}
+		
+		solve(x,y,size/2);
+		solve(x,y + size/2, size/2);
+		solve(x + size/2, y, size/2);
+		solve(x + size/2, y + size/2, size/2);
+	}
+	
+	static boolean colorCheck(int x, int y, int size) {
+		int color = board[x][y];
+		for(int i=x; i<x+size; i++) {
+			for(int j=y; j<y+size; j++) {
+				if(board[i][j] != color) return false;
 			}
 		}
+		return true;
 	}
 
 }
