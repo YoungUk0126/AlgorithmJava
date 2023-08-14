@@ -14,30 +14,29 @@ public class BJ_S4_1620_나는야포켓몬마스터이다솜 {
 
     static int N, M;
 
-    static HashMap<Integer, String> dic = new HashMap<>();
+    static HashMap<Integer, String> numDic = new HashMap<>();
+    static HashMap<String, Integer> stringDic = new HashMap<>();
     public static void main(String[] args) throws IOException {
         tokens = new StringTokenizer(input.readLine());
 
         N = Integer.parseInt(tokens.nextToken());
         M = Integer.parseInt(tokens.nextToken());
-
+        String temp;
         for(int i=1; i<=N; i++) {
-            dic.put(i, input.readLine());
+        	temp = input.readLine();
+            numDic.put(i, temp);
+            stringDic.put(temp, i);
         }
 
         for(int i=0; i<M; i++) {
-            String temp = input.readLine();
+            temp = input.readLine();
             // 입력이 숫자라면
             if(Character.isDigit(temp.charAt(0))){
-                builder.append(dic.get(Integer.parseInt(temp))).append("\n");
+                builder.append(numDic.get(Integer.parseInt(temp))).append("\n");
             }
+            // 입력이 포켓몬 이름이라면
             else {
-                for(Integer key: dic.keySet()){
-                    if(dic.get(key).equals(temp)){
-                        builder.append(key).append("\n");
-                        break;
-                    }
-                }
+                builder.append(stringDic.get(temp)).append("\n");
             }
         }
         System.out.println(builder);
