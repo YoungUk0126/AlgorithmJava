@@ -28,6 +28,7 @@ public class BJ_G2_3109_빵집 {
 	static int R,C;
 	
 	static int ans;
+	static boolean backFlag;
 
 	public static void main(String[] args) throws IOException {
 		tokens = new StringTokenizer(input.readLine());
@@ -36,6 +37,7 @@ public class BJ_G2_3109_빵집 {
 		
 		map = new char[R][C];
 		visited = new boolean[R][C];
+		backFlag = true;
 		
 		for(int i=0; i<R; i++) {
 			String str = input.readLine();
@@ -44,38 +46,41 @@ public class BJ_G2_3109_빵집 {
 				if(map[i][j] == 'x') visited[i][j] = true;
 			}
 		}
-		pipe(0, 0);
+		for(int i=0; i<R; i++) {
+			pipe(i, 0);
+		}
 		System.out.println(ans);
 	}
 	
 	static void pipe(int row, int col) {
-		// 가지 조건
-		
 		// 기저 조건
 		if(col == C-1) {
+			backFlag = false;
 			ans++;
 			return;
 		}
 		// 재귀 조건
-		for(int i=row; i<R; i++) {
-			// 오른쪽 위
-			if(0<=i-1 && !visited[i-1][col+1]) {
-				visited[i-1][col+1] = true;
-				pipe(i-1, col+1);
-			}
-			// 오른쪽
-			if(!visited[i][col+1]) {
-				visited[i][col+1] = true;
-				pipe(i, col+1);
-			}
-			// 오른쪽 아래
-			if(i<R && !visited[i+1][col+1]) {
-				visited[i+1][col+1] = true;
-				pipe(i+1, col+1);
-			}
-			
+		// 오른쪽 위
+		backFlag = true;
+		if (isIn(row - 1, col + 1) && !visited[row - 1][col + 1] && backFlag) {
+			visited[row - 1][col + 1] = true;
+			pipe(row - 1, col + 1);
+		}
+		// 오른쪽
+		if (isIn(row, col + 1) && !visited[row][col + 1] && backFlag) {
+			visited[row][col + 1] = true;
+			pipe(row, col + 1);
+		}
+		// 오른쪽 아래
+		if (isIn(row + 1, col + 1) && !visited[row + 1][col + 1] && backFlag) {
+			visited[row + 1][col + 1] = true;
+			pipe(row + 1, col + 1);
 		}
 		
+		
+	}
+	static boolean isIn(int x, int y) {
+		return 0<=x && x<R && 0<=y && y<C;
 	}
 
 }
