@@ -30,7 +30,6 @@ public class BJ_G5_2467_용액 {
 		}
 		// 테케는 맞는데 히든 테케가 틀림
 		// 모든 용액이 양수나 음수로 들어오는 것도 테스트 해봐야됨
-		// ? 맞는데?
 		while(left<right) {
 			sum = water[left] + water[right];
 			if(min >= Math.abs(sum)) {
