@@ -76,8 +76,6 @@ public class BJ_G2_3109_빵집 {
 			visited[row + 1][col + 1] = true;
 			pipe(row + 1, col + 1);
 		}
-		
-		
 	}
 	static boolean isIn(int x, int y) {
 		return 0<=x && x<R && 0<=y && y<C;
