@@ -29,7 +29,6 @@ public class BJ_S1_1992_쿼드트리 {
 	static int N;
 	static int[][] video;
 	public static void main(String[] args) throws NumberFormatException, IOException {
-		// TODO Auto-generated method stub
 		N = Integer.parseInt(input.readLine());
 		video = new int[N][N];
 		for(int i=0; i<N; i++) {
