@@ -82,20 +82,20 @@ public class BJ_G4_2580_스도쿠 {
 		// 기저 조건
 		
 		// 재귀 조건
-		if(board[row][col] == 0) {
-			// 숫자 넣을 수 있는지 체크
-			for(int i=1; i<=9; i++) {
-				if(tripleCheck(row, col, i)) {
-					board[row][col] = i;
-					check(row, col+1);
-				}
-			}
-		}
+//		if(board[row][col] == 0) {
+//			// 숫자 넣을 수 있는지 체크
+//			for(int i=1; i<=9; i++) {
+//				if(tripleCheck(row, col, i)) {
+//					board[row][col] = i;
+//					check(row, col+1);
+//				}
+//			}
+//		}
 
 	}
 	
-	private static boolean tripleCheck(int row, int col, int value) {
-		
-	}
+//	private static boolean tripleCheck(int row, int col, int value) {
+//		
+//	}
 
 }

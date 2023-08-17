@@ -89,9 +89,10 @@ public class SW_D5_무선충전 {
 	static StringTokenizer tokens;
 	
 	static int map[][];
-	static int sumA, sumB;
+	static int sum;
 	static int totalTime, BC;
-	static int moving[][] = {{0,0}, {0,-1}, {-1,0}, {0,1}, {1,0}};
+	// 배열 입력이 이상해서 상우하좌 값을 이상하게 줘야함
+	static int moving[][] = { { 0, 0 }, { 0, -1 }, { 1, 0 }, { 0, 1 }, { -1, 0 } };
 	
 	static int Amove[];
 	static int Bmove[];
@@ -102,6 +103,7 @@ public class SW_D5_무선충전 {
 		// TODO Auto-generated method stub
 		int T = Integer.parseInt(input.readLine());
 		for(int tc=1; tc<=T; tc++) {
+			sum = 0;
 			map = new int[11][11];
 			tokens = new StringTokenizer(input.readLine());
 			totalTime = Integer.parseInt(tokens.nextToken());
@@ -127,18 +129,10 @@ public class SW_D5_무선충전 {
 				int cRange = Integer.parseInt(tokens.nextToken());
 				int p = Integer.parseInt(tokens.nextToken());
 				
-				map[x][y] = 1;
-				dfs(x, y, cRange, 0);
 				
 				batteries[b] = new Battery(x, y, cRange, p);
 			}
 			
-			for(int i=1; i<11; i++) {
-				for(int j=1; j<11; j++) {
-					System.out.print(map[i][j] + " ");
-				}
-				System.out.println();
-			}
 			int cnt=0;
 			A = new Person(1, 1);
 			B = new Person(10, 10);
@@ -151,47 +145,62 @@ public class SW_D5_무선충전 {
 				B.y += moving[Bmove[cnt]][1];
 				
 				getCharged();
+				cnt++;
 			}
-			
+			builder.append("#").append(tc).append(" ").append(sum).append("\n");
 		}
+		System.out.println(builder);
 	}
 	private static void getCharged() {
-		ArrayList< int[] > ARangeList = new ArrayList<>();
-		ArrayList< int[] > BRangeList = new ArrayList<>();
+		// 배터리 개수가 몇 개인지 모르니까 동적 배열
+		ArrayList< Integer > listA = new ArrayList<>();
+		ArrayList< Integer > listB = new ArrayList<>();
 		
-		if(map[A.x][A.y] == 1) {
-			for(int b=1; b<=BC; b++) {
-				if(BRangeCheck(batteries[b])) {
-					ARangeList.add(new int[] {A.x, A.y});
+		// 1. 배터리 별로 A와 B가 범위 안에 있는지 확인
+		for(int i=1; i<=BC; i++) {
+			// A와 각 BC와의 거리가 접속 가능하다면 ( 충전범위 C >= 거리 D)
+			if (batteries[i].cRange >= (Math.abs(batteries[i].x - A.x)) + (Math.abs(batteries[i].y - A.y))) {
+				listA.add(i);
+			}
+			// B와 각 BC와의 거리가 접속 가능하다면 ( 충전범위 C >= 거리 D)
+			if (batteries[i].cRange >= (Math.abs(batteries[i].x - B.x)) + (Math.abs(batteries[i].y - B.y))) {
+				listB.add(i);
+			}
+		}
+		
+		int temp = 0;
+		int max = 0;
+		if(listA.size() > 0 && listB.size() > 0 ) {
+			// 완탐으로 조합 모두 구해서 최대로 값을 얻어올 수 있는지 확인
+			for(int i: listA) {
+				for(int j: listB) {
+					temp = 0;
+					if ( i == j ) { // 같은 BC에 겹친 경우 처치량 나눠가지니까 한개만 더하기
+						temp = batteries[i].p;
+					} else { // 다른 BC에 겹친 경우 각각 처리량 더하기
+						temp += batteries[i].p;
+						temp += batteries[j].p;
+					}
+					max = Math.max(max,  temp);
 				}
 			}
 		}
-		if(map[B.x][B.y] == 1) {
-			BRangeList.add(new int[] {B.x, B.y});
+		else if(listA.size() > 0 ) {
+			for(int i: listA) {
+				if ( max < batteries[i].p)
+					max = batteries[i].p;
+			}
 		}
-		
-		getCom(ARangeList, BRangeList);
-		
-	}
-	private static void dfs(int x, int y, int cRange, int cnt) {
-		// 기저 조건
-		if(cnt == cRange) return;
-		
-		
-		for(int i=1; i<5; i++) {
-			int nx = x + moving[i][0];
-			int ny = y + moving[i][1];
-			if(isIn(nx,ny)) {
-				map[nx][ny] = 1;
-				dfs(nx,ny,cRange,cnt+1);
+		else if( listB.size() > 0 ) {
+			for (int i: listB) {
+				if( max < batteries[i].p)
+					max = batteries[i].p;
 			}
 		}
 		
-	}
-	private static boolean BRangeCheck(Battery b) {
+		sum += max;
 		
 	}
-	
 	private static boolean isIn(int x, int y) {
 		return 1<=x && x<11 && 1<=y && y<11;
 	}
