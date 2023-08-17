@@ -4,7 +4,7 @@ package bj.g2;
 @since 2023.08.16
 @see https://www.acmicpc.net/problem/3109
 @git
-@performance
+@performance 364ms
 @category #
 @note
 파이프를 놓을건데 가장 많은 파이프를 놓고 싶어
