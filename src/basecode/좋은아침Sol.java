@@ -3,8 +3,7 @@ package basecode;
 import java.util.Arrays;
 
 public class 좋은아침Sol {
-    static char[] src = { 'a', 'b', 'c', 'd' };
-
+    static char[] src = { 'a', 'b', 'c', 'd', 'e' };
     public static void main(String[] args) {
 //        4P3을 구하는 코드를 작성해보자.
 //        makePermutation(0, new char[3], new boolean[src.length]);

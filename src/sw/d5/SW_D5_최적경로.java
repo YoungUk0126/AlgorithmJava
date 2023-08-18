@@ -42,9 +42,6 @@ class node{
 	}
 	
 }
-
-
-
 public class SW_D5_최적경로 {
 	static BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
 	static StringTokenizer tokens;
