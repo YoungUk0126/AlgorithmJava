@@ -30,6 +30,7 @@ public class 좋은저녁 {
 		
 		graph = new LinkNode[N+1]; // 현재는 1 base index 사용 중
 		
+		// 얘는 그래프 상태를 표현한 따로 만들은 그래프
 		for(int m=0; m<M; m++) {
 			tokens = new StringTokenizer(input.readLine());
 			int from = Integer.parseInt(tokens.nextToken());
@@ -40,6 +41,10 @@ public class 좋은저녁 {
 		}
 		
 		bfs();
+		System.out.println(builder);
+		// next에 null을 넣어도 따로 간선 연결 상황을 graph배열에 다 넣어줬기 때문에 알아서 찾아줌
+		builder = new StringBuilder();
+		dfs(new LinkNode(V, null), new boolean[N+1]);
 		System.out.println(builder);
 	}
 	
@@ -77,6 +82,21 @@ public class 좋은저녁 {
 			builder.append("\n");
 			// 기존 size 소진 완료!!
 //			depth++;
+		}
+	}
+	
+	static void dfs(LinkNode node, boolean[] visited) {
+		// 1. 방문처리
+		visited[node.i] = true;
+		// 2. 사용하기
+		builder.append("depth : "+node.depth+ ", 부모: "+node.parent+", 나는? "+node.i).append("\n");
+		// 3. 다음 자식 찾기
+		for(LinkNode child = graph[node.i]; child !=null; child = child.next) {
+			if(!visited[child.i]) {
+				child.parent = node;
+				child.depth = node.depth + 1;
+				dfs(child, visited);
+			}
 		}
 	}
 	

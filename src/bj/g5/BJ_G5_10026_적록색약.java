@@ -1,7 +1,10 @@
 package bj.g5;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayDeque;
+import java.util.Queue;
 import java.util.StringTokenizer;
 
 /**
@@ -28,9 +31,97 @@ public class BJ_G5_10026_적록색약 {
 	static StringTokenizer tokens;
 	
 	static char[][] map;
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
+	static int[][] deltas = { { -1, 0 }, { 1, 0 }, { 0, -1 }, { 0, 1 } };
+	static boolean[][] vNormal, vRedGreen;
+	static int N;
+	static int normal, redGreen;
+	public static void main(String[] args) throws IOException{
+		N = Integer.parseInt(input.readLine());
+		
+		map = new char[N][N];
+		vNormal = new boolean[N][N];
+		vRedGreen = new boolean[N][N];
+		for(int i=0; i<N; i++) {
+			String str = input.readLine();
+			map[i] = str.toCharArray();
+		}
+		
+		for(int i=0; i<N; i++) {
+			for(int j=0; j<N; j++) {
+				if(!vNormal[i][j]) {
+					normalBfs(i, j, vNormal);
+					normal++;
+				}
+				if(!vRedGreen[i][j]) {
+					redGreenBfs(i, j, vRedGreen);
+					redGreen++;
+				}
+			}
+		}
+		
+		System.out.println(normal + " " + redGreen);
 
+	}
+	private static void redGreenBfs(int startX, int startY, boolean[][] v) {
+		Queue<int []> q = new ArrayDeque<>();
+		
+		q.offer(new int[] {startX,startY});
+		v[startX][startY] = true;
+		
+		char color = map[startX][startY];
+		
+		while(!q.isEmpty()) {
+			int[] arr = q.poll();
+			int x = arr[0];
+			int y = arr[1];
+			for(int d=0; d<4; d++) {
+				int nx = x + deltas[d][0];
+				int ny = y + deltas[d][1];
+				
+				if(color == 'R' || color == 'G') {
+					if(isIn(nx, ny) && !v[nx][ny] ) {
+						if(map[nx][ny] == 'R' || map[nx][ny] == 'G') {
+							v[nx][ny] = true;
+							q.offer(new int[] {nx, ny});
+						}
+					}
+				}
+				else if(color == 'B'){
+					if(isIn(nx, ny) && !v[nx][ny] && map[nx][ny] == color) {
+						v[nx][ny] = true;
+						q.offer(new int[] {nx, ny});
+					}
+				}
+				
+			}
+		}
+	}
+	
+	private static void normalBfs(int startX, int startY, boolean[][] v) {
+		Queue<int []> q = new ArrayDeque<>();
+		
+		q.offer(new int[] {startX,startY});
+		v[startX][startY] = true;
+		
+		char color = map[startX][startY];
+		
+		while(!q.isEmpty()) {
+			int[] arr = q.poll();
+			int x = arr[0];
+			int y = arr[1];
+			for(int d=0; d<4; d++) {
+				int nx = x + deltas[d][0];
+				int ny = y + deltas[d][1];
+				
+				if(isIn(nx, ny) && !v[nx][ny] && map[nx][ny] == color) {
+					v[nx][ny] = true;
+					q.offer(new int[] {nx, ny});
+				}
+			}
+		}
+	}
+	static boolean isIn(int x, int y) {
+		return 0<=x && x<N && 0<=y && y<N;
 	}
 
 }
