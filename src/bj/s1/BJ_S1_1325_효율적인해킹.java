@@ -1,5 +1,6 @@
 package bj.s1;
 
+// 큐랑 LinkedList랑 다른거 말곤 주석이 코드와 다른게 없다;;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -16,10 +17,11 @@ public class BJ_S1_1325_효율적인해킹 {
 	static StringBuilder builder = new StringBuilder();
 	static StringTokenizer tokens;
 	
-	static int N,M,max;
+	static int N,M;
+	static int max = 0;
 	static ArrayList<ArrayList<Integer>> node = new ArrayList<>();
 	static ArrayList<Integer> answer = new ArrayList<>();
-	static Queue<Integer> queue = new ArrayDeque<>();
+	static Queue<Integer> queue;
 	static boolean visited[];
 	
 	public static void main(String[] args) throws IOException {
@@ -28,37 +30,36 @@ public class BJ_S1_1325_효율적인해킹 {
 		N = Integer.parseInt(tokens.nextToken());
 		M = Integer.parseInt(tokens.nextToken());
 		
-		visited = new boolean[M+1];
-		
 		for(int i=0; i<=N; i++) {
 			node.add(new ArrayList<>());
 		}
 		
-		for(int i=1; i<=M; i++) {
+		for(int i=0; i<M; i++) {
 			tokens = new StringTokenizer(input.readLine());
 			int from = Integer.parseInt(tokens.nextToken());
 			int to = Integer.parseInt(tokens.nextToken());
 			node.get(to).add(from);
 		}
 		for(int i=1; i<=N; i++) {
+			queue = new ArrayDeque<>();
 			visited = new boolean[N+1];
 			queue.offer(i);
 			visited[i] = true;
-			int cnt = 0;
+			int cnt = 1;
 			
 			while(!queue.isEmpty()) {
 				for(int c: node.get(queue.poll())) {
 					if(!visited[c]) {
 						visited[c] = true;
-						cnt++;
+						cnt+=1;
 						queue.offer(c);
 					}
 				}
 			}
 			if(max < cnt) {
+				max = cnt;
 				answer = new ArrayList<>();
 				answer.add(i);
-				max = cnt;
 			}
 			else if(max == cnt) {
 				answer.add(i);
@@ -69,32 +70,5 @@ public class BJ_S1_1325_효율적인해킹 {
 			System.out.print(i + " ");
 		}
 	}
-
-//	private static void bfs(int start) {
-//		visited = new boolean[N+1];
-//		queue.offer(start);
-//		visited[start] = true;
-//		int cnt = 0;
-//		
-//		while(!queue.isEmpty()) {
-//			ArrayList<Integer> computer = node.get(queue.poll());
-//			for(int c: computer) {
-//				if(!visited[c]) {
-//					visited[c] = true;
-//					cnt++;
-//					queue.offer(c);
-//				}
-//			}
-//		}
-//		if(max < cnt) {
-//			answer = new ArrayList<>();
-//			answer.add(start);
-//			max = cnt;
-//		}
-//		else if(max == cnt) {
-//			answer.add(start);
-//		}
-//		
-//	}
 
 }

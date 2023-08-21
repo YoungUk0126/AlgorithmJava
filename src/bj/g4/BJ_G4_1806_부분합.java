@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.StringTokenizer;
 
+// 70퍼 컽 남
 public class BJ_G4_1806_부분합 {
 
 	static BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
@@ -30,12 +31,11 @@ public class BJ_G4_1806_부분합 {
 		int end = 0;
 		int sum = 0;
 		
-		for(int i = start; i<=end; i++) {
-			sum += nums[i];
-		}
+
+		sum += nums[0];
 		while(start < N) {
 			if (sum >= S || end == N-1) {
-				if( sum > S) {
+				if( sum >= S) {
 					min = Math.min(min, (end-start)+1);
 				}
 				sum -= nums[start];
@@ -46,7 +46,8 @@ public class BJ_G4_1806_부분합 {
 				sum += nums[end];
 			}
 		}
-		System.out.println(min);
+		if(min == Integer.MAX_VALUE) System.out.println("0");
+		else System.out.println(min);
 		
 	}
 
