@@ -13,12 +13,17 @@ package bj.s1;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayDeque;
+import java.util.Queue;
 import java.util.StringTokenizer;
 
 public class BJ_S1_1697_숨바꼭질 {
+	static final int MAX_DISTANCE = 100000;
 	static BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
 	static StringTokenizer tokens;
 	static StringBuilder builder = new StringBuilder();
+	static Queue<int []> q;
+	static boolean[] v;
 	
 	static int N,K,min;
 
@@ -29,21 +34,48 @@ public class BJ_S1_1697_숨바꼭질 {
 		K = Integer.parseInt(tokens.nextToken());
 		
 		min = Integer.MAX_VALUE;
-		dfs(0, 0);
+		// 수빈이가 동생보다 먼 위치에 있다면 무조건 -1하는거니까
+		if(N >= K) {
+			System.out.println(N-K);
+			return;
+		}
+		bfs(N);
 		System.out.println(min);
 	}
 	//파멸적인 재귀 상태
-	static void dfs(int cnt, int sum) {
-		if(sum==K) {
-			min = Math.min(cnt, min);
-			return;
-		}
+	static void bfs(int start) {
+		q = new ArrayDeque<>();
+		v = new boolean[MAX_DISTANCE+1];
+		q.offer(new int[] {start,0});
+		v[start] = true;
+		int[] arr = new int[2];
 		
-		if(sum * 2  < K) {
-			dfs(cnt + 1, sum*2);
-		}
-		else {
-			dfs(cnt + 1, sum-1);
+		while(!q.isEmpty()) {
+			arr = q.poll();
+			int current = arr[0];
+			int cnt = arr[1];
+			
+			if(current > K*2) {
+				continue;
+			}
+			if(current == K) {
+				min = Math.min(min, cnt);
+				break;
+			}
+			else {
+				if((current+1)<=MAX_DISTANCE && !v[current+1]) {
+					q.offer(new int[] {current+1,cnt+1});
+					v[current+1] = true;
+				}
+				if((current - 1) >= 0&& (current-1)<=MAX_DISTANCE && !v[current-1]) {
+					q.offer(new int[] {current-1,cnt+1});
+					v[current-1] = true;
+				}
+				if((current*2)<=MAX_DISTANCE && !v[current*2]) {
+					q.offer(new int[] {current*2,cnt+1});
+					v[current*2] = true;
+				}
+			}
 		}
 	}
 	
