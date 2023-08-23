@@ -14,7 +14,7 @@ import java.util.StringTokenizer;
  * @since 2023. 08. 23
  * @see https://www.acmicpc.net/problem/17471
  * @git
- * @performance
+ * @performance 100ms
  * @category #
  * @note 시간 : 0.5초 N : 10, 구역의 인구수 : 100 백준시는 N개의 구역으로 나누어져 있고, 구역은 1번부터 N번까지
  *       번호가 매겨져 있다. 구역을 두 개의 선거구로 나눠야 하고, 각 구역은 두 선거구 중 하나에 포함되어야 한다. 선거구는 구역을
