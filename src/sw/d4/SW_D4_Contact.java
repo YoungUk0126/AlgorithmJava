@@ -14,7 +14,7 @@ public class SW_D4_Contact {
     static StringBuilder builder = new StringBuilder();
     static StringTokenizer tokens;
     
-    static ArrayList<간선> graph;
+    static ArrayList<Integer>[] graph = new ArrayList[101];
     static boolean v[];
     static int L,startV;
 
@@ -22,38 +22,50 @@ public class SW_D4_Contact {
 		// TODO Auto-generated method stub
 		for(int tc=1; tc<=1; tc++) {
 			
-			graph = new ArrayList<>();
+			
+			for(int i=0; i<101; i++) {
+				graph[i] = new ArrayList<Integer>();
+			}
 			
 			tokens = new StringTokenizer(input.readLine());
 			L = Integer.parseInt(tokens.nextToken());
 			startV = Integer.parseInt(tokens.nextToken());
 			
-
 			tokens = new StringTokenizer(input.readLine());
-			for(int i=0; i<L/2; i++) {
+			for(int i=0; i<tokens.countTokens(); i+=2) {
 				int from = Integer.parseInt(tokens.nextToken());
 				int to = Integer.parseInt(tokens.nextToken());
-				
-				graph.add(new 간선(from, to));
+
+				graph[from].add(to);
 			}
 			
 			bfs(startV);
 		}
 	}
 	private static void bfs(int startV) {
-		Queue<간선> q = new ArrayDeque<>();
+		Queue<ArrayList> q = new ArrayDeque<>();
 		v = new boolean[101];
 		
-	}
-	static class 간선{
-		int from, to;
-
-		public 간선(int from, int to) {
-			super();
-			this.from = from;
-			this.to = to;
-		}
+		int depth = 0;
 		
+		q.offer(graph[startV]);
+		v[startV] = true;
+		
+		while(!q.isEmpty()) {
+			int size = q.size();
+			depth++;
+			while (size-- > 0) {
+				ArrayList<Integer> now = q.poll();
+				for(int num: now) {
+					if(!v[num]) {
+						v[num] = true;
+						System.out.print(now + " ");
+						q.offer(graph[num]);
+					}
+				}
+				System.out.println();
+			}
+		}
 	}
 
 }
