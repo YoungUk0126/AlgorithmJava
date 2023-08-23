@@ -102,7 +102,7 @@ public class BJ_G4_1197_최소스패닝트리 {
     }
 
 
-    static class 간선 implements Comparable<간선> {
+    private static class 간선 implements Comparable<간선> {
         int A;
         int B;
         int W;
