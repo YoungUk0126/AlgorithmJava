@@ -21,7 +21,8 @@ public class SW_D4_Contact {
 
 	public static void main(String[] args) throws IOException{
 		// TODO Auto-generated method stub
-		for(int tc=1; tc<=1; tc++) {
+		for(int tc=1; tc<=10; tc++) {
+			builder.append("#").append(tc).append(" ");
 			
 			graph = new ArrayList[101];
 			
@@ -43,6 +44,7 @@ public class SW_D4_Contact {
 
 			bfs(startV);
 		}
+		System.out.println(builder);
 	}
 	private static void bfs(int startV) {
 		Queue< int[] > q = new ArrayDeque<>();
@@ -55,7 +57,6 @@ public class SW_D4_Contact {
 		int[] Mx = new int[ 2 ];
 		while(!q.isEmpty()) {
 			int[] now = q.poll();
-			System.out.println( Arrays.toString( now ) );
 			
 			if( Mx[ 1 ] < now[ 1 ] ) {
 				Mx = now.clone();
@@ -69,18 +70,12 @@ public class SW_D4_Contact {
 			for (int num : graph[ now[ 0 ] ]) {
 				if (!v[num]) {
 					v[num] = true;
-//					System.out.print(num + " ");
 					q.offer( new int[] { num, now[ 1 ] + 1 } );
 				}
 			}
-			/**
-			 * 
-			 * 영욱영욱아 힘내라 
-			 * 
-			 */
-			System.out.println( Mx[ 0 ]);
 			
 		}
+		builder.append(Mx[ 0 ]).append("\n");
 	}
 
 }
