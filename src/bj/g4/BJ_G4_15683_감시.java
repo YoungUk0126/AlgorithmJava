@@ -35,9 +35,6 @@ import java.util.StringTokenizer;
  *       
  *       다 그리면 copyMap에 0을 체크한 후 그 개수를 min과 비교하여 최솟값을 찾는다.
  *       모든 경우의 수를 찾을 때까지 돈다.
- *     
- *     
- * 
  * 
  */
 
