@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Queue;
 import java.util.StringTokenizer;
 
@@ -14,7 +15,7 @@ public class SW_D4_Contact {
     static StringBuilder builder = new StringBuilder();
     static StringTokenizer tokens;
     
-    static ArrayList<Integer>[] graph = new ArrayList[101];
+    static ArrayList<Integer>[] graph;
     static boolean v[];
     static int L,startV;
 
@@ -22,6 +23,7 @@ public class SW_D4_Contact {
 		// TODO Auto-generated method stub
 		for(int tc=1; tc<=1; tc++) {
 			
+			graph = new ArrayList[101];
 			
 			for(int i=0; i<101; i++) {
 				graph[i] = new ArrayList<Integer>();
@@ -32,39 +34,52 @@ public class SW_D4_Contact {
 			startV = Integer.parseInt(tokens.nextToken());
 			
 			tokens = new StringTokenizer(input.readLine());
-			for(int i=0; i<tokens.countTokens(); i+=2) {
+			for(int i=0; i<L / 2; i++) {
 				int from = Integer.parseInt(tokens.nextToken());
 				int to = Integer.parseInt(tokens.nextToken());
 
 				graph[from].add(to);
 			}
-			
+
 			bfs(startV);
 		}
 	}
 	private static void bfs(int startV) {
-		Queue<ArrayList> q = new ArrayDeque<>();
+		Queue< int[] > q = new ArrayDeque<>();
 		v = new boolean[101];
 		
 		int depth = 0;
 		
-		q.offer(graph[startV]);
+		q.offer( new int[] { startV, 0 } );
 		v[startV] = true;
-		
+		int[] Mx = new int[ 2 ];
 		while(!q.isEmpty()) {
-			int size = q.size();
-			depth++;
-			while (size-- > 0) {
-				ArrayList<Integer> now = q.poll();
-				for(int num: now) {
-					if(!v[num]) {
-						v[num] = true;
-						System.out.print(now + " ");
-						q.offer(graph[num]);
-					}
+			int[] now = q.poll();
+			System.out.println( Arrays.toString( now ) );
+			
+			if( Mx[ 1 ] < now[ 1 ] ) {
+				Mx = now.clone();
+			}else if( Mx[ 1 ] == now[ 1 ] ) {
+				if( Mx[ 0 ] < now[ 0 ] ) {
+					Mx = now.clone();
 				}
-				System.out.println();
 			}
+			
+			
+			for (int num : graph[ now[ 0 ] ]) {
+				if (!v[num]) {
+					v[num] = true;
+//					System.out.print(num + " ");
+					q.offer( new int[] { num, now[ 1 ] + 1 } );
+				}
+			}
+			/**
+			 * 
+			 * 영욱영욱아 힘내라 
+			 * 
+			 */
+			System.out.println( Mx[ 0 ]);
+			
 		}
 	}
 
