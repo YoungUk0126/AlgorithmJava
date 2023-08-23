@@ -5,7 +5,7 @@ package bj.g4;
 @since 2023.08.23
 @see https://www.acmicpc.net/problem/6497
 @git 
-@performance
+@performance 748ms
 @category #
 @note
 시간 1초
