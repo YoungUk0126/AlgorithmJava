@@ -38,6 +38,8 @@ public class BJ_G5_1759_암호만들기 {
 		
 		pw = new char[C];
 		tokens = new StringTokenizer(input.readLine());
+		// 한 줄에 있는 공백들을 지운 후 CharArray로 입력을 받음
+		// pw = input.readLine().replace(" ","").toCharArray();
 		for(int i=0; i<C; i++) {
 			pw[i] = tokens.nextToken().charAt(0);
 		}
