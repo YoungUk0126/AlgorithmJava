@@ -1,3 +1,5 @@
+package bj.g4;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -9,7 +11,7 @@ import java.util.StringTokenizer;
  @author 김영욱
  @since 2023. 08. 22
  @see
- @git
+ @git 
  @performance
  @category #
  @note

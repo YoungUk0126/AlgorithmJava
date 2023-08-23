@@ -1,3 +1,5 @@
+package bj.g5;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -9,7 +11,7 @@ import java.util.StringTokenizer;
  @author 김영욱
  @since 2023.08.22
  @see https://www.acmicpc.net/problem/13023
- @git
+ @git 
  @performance
  @category #
  @note
