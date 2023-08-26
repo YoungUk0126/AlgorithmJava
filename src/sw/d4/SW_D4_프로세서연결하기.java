@@ -5,7 +5,7 @@ package sw.d4;
  * @since 2023.08.25
  * @see https://swexpertacademy.com/main/talk/solvingClub/problemView.do?solveclubId=AYlH3z4K78kDFAVR&contestProbId=AV4suNtaXFEDFAUf&probBoxId=AYoaJoMabgADFAU6&type=PROBLEM&problemBoxTitle=0821%EC%A3%BC&problemBoxCnt=4
  * @git
- * @performance 
+ * @performance 217ms
  * @category #
  * @note 
  * 시간 : 60개의 테스트케이스 4초
@@ -27,6 +27,15 @@ package sw.d4;
  * 각 Core마다 전선을 연결할 방향을 정해줘야함, Core길이만큼의 방향 순열이 완성되면
  * 새로운 맵을 복사해서 그 맵에 전선을 연결해줌
  * 
+ * 이렇게 하면 시간초과가 난다.
+ * 
+ * 두번째, deltas에 안가는 방향 0,0을 추가해준다.
+ * 그리고 모든 순열이 정해지고 그리는 방법이 아닌, 그때그때 그리는 방법을 선택했다.
+ * 그리다가 다른 전선이나 다른 코어에 막히면 다시 원래 코어로 돌아가면서 그렸던걸 0으로 지워준다
+ * 그리고 draw메소드는 boolean타입으로 다른 코어에 막혔다면 false를 반환하여 
+ * 더 재귀를 타지 않고 for문을 continue해준다.(가지치기)
+ * 이때 deltas에 *-1을 해주면 원래 가던방향의 반대방향으로 인덱싱을 할 수 있다.
+ * 다 그렸다면 재귀로 다음 코어, 그리고 재귀에서 빠져나온다면 backup이라는 메소드로 그렸던걸 다시 0으로 지워준다.
  * 
  */
 
@@ -43,17 +52,15 @@ public class SW_D4_프로세서연결하기 {
 	static StringTokenizer tokens;
 
 	// 상우하좌
-	static int[][] deltas = { { -1, 0 }, { 0, 1 }, { 1, 0 }, { 0, -1 } };
+	static int[][] deltas = { { -1, 0 }, { 0, 1 }, { 1, 0 }, { 0, -1 }, {0, 0} };
 
-	static int[][] copyMap;
-	static int[] perList;
-	static int N, T, min;
+	static int N, T, min, maxCore, coreCnt;
 	static int map[][];
-	static ArrayList<Core> coreList;
+	static ArrayList<Core>coreList;
 
 	public static void main(String[] args) throws IOException {
 		// TODO Auto-generated method stub
-		T = Integer.parseInt(input.readLine());
+		T = Integer.parseInt(input.readLine().trim());
 
 		for (int tc = 1; tc <= T; tc++) {
 			builder.append("#").append(tc).append(" ");
@@ -62,22 +69,22 @@ public class SW_D4_프로세서연결하기 {
 			map = new int[N][N];
 			coreList = new ArrayList<>();
 			min = Integer.MAX_VALUE;
+			maxCore = Integer.MIN_VALUE;
+			coreCnt = 0;
 
 			for (int i = 0; i < N; i++) {
 				tokens = new StringTokenizer(input.readLine());
 				for (int j = 0; j < N; j++) {
 					map[i][j] = Integer.parseInt(tokens.nextToken());
 					// 경계선에 있는 코어가 아니라면
-					if (i != 0 || j != 0 || i != N-1 || j != N-1) {
+					if (i != 0 && j != 0 && i != N-1 && j != N-1) {
 						if (map[i][j] == 1) {
 							coreList.add(new Core(i, j));
 						}
 					}
 				}
 			}
-			// core에 각각 방향을 정해서 넘겨주기 위해 순열 리스트를 선언
-			perList = new int[coreList.size()];
-			makePermutation(0, coreList.size());
+			dfs(0, coreList.size());
 			
 			builder.append(min).append("\n");
 
@@ -86,41 +93,83 @@ public class SW_D4_프로세서연결하기 {
 
 	}
 
-	private static void makePermutation(int cnt, int size) {
+	private static void dfs(int cnt, int size) {
 		// 기저 조건
 		if (cnt == size) {
-			// 맵을 배껴옴
-			copyMap = new int[N][N];
-			for (int i = 0; i < N; i++) {
-				System.arraycopy(map[i], 0, copyMap[i], 0, map[i].length);
+			// 코어 개수가 가장 많으면, 그때 전선 수를 확인하기 위해서
+			if(maxCore < coreCnt) {
+				min = Integer.MAX_VALUE;
+				maxCore = coreCnt;
+				getMin();
 			}
-			boolean flag = true;
-			for(int i = 0; i < size; i++) {
-				flag = draw(coreList.get(i), perList[i]);
-				if(!flag) break;
+			else if(maxCore == coreCnt) {
+				getMin();
 			}
-			
-			if(flag)getMin();
-			
-			
-			
 			return;
 		}
-		// 상하좌우 4방향 중복으로 넘겨줌
-		for (int d = 0; d < 4; d++) {
-			perList[cnt] = d;
-			makePermutation(cnt + 1, size);
+		// 상하좌우 5방향 중복으로 넘겨줌
+		for (int d = 0; d < 5; d++) {
+			if(d == 4) {
+				dfs(cnt + 1, size);
+			} else {
+				boolean flag = draw(coreList.get(cnt), d);
+				if(!flag) continue;
+				coreCnt++;
+				dfs(cnt + 1, size);
+				backup(coreList.get(cnt), d);
+				coreCnt--;
+			}
 		}
 		
 
 	}
+	private static boolean draw(Core core, int d) {
+		
+		int startX = core.x;
+		int startY = core.y;
+
+		int nx = startX + deltas[d][0];
+		int ny = startY + deltas[d][1];
+		while (isIn(nx, ny)) {
+			if(map[nx][ny] == 1 || map[nx][ny] == -1) {
+				// 원래 갔던 곳 까지 지워줄꺼임
+				// -1을 곱해서 역주행한다
+				nx = nx + (deltas[d][0] * -1);
+				ny = ny + (deltas[d][1] * -1);
+				// 출발했던 노드를 만나기 전까지
+				while(map[nx][ny] != 1) {
+					map[nx][ny] = 0;
+					nx = nx + (deltas[d][0] * -1);
+					ny = ny + (deltas[d][1] * -1);
+				}
+				return false;
+			}
+			map[nx][ny] = -1;
+			nx = nx + deltas[d][0];
+			ny = ny + deltas[d][1];
+		}
+		return true;
+	}
 	
+	private static void backup(Core core, int d) {
+		int startX = core.x;
+		int startY = core.y;
+
+		int nx = startX + deltas[d][0];
+		int ny = startY + deltas[d][1];
+		while (isIn(nx, ny) && map[nx][ny] == -1) {
+			map[nx][ny] = 0;
+			nx = nx + deltas[d][0];
+			ny = ny + deltas[d][1];
+		}
+		
+	}
+
 	private static void getMin() {
 		int cnt = 0;
 		for(int i=0; i<N; i++) {
 			for(int j=0; j<N; j++) {
-				if(copyMap[i][j] == -1) cnt++;
-				
+				if(map[i][j] == -1) cnt++;
 			}
 		}
 		min = Math.min(min, cnt);
@@ -137,22 +186,7 @@ public class SW_D4_프로세서연결하기 {
 
 	}
 
-	private static boolean draw(Core core, int d) {
-		int startX = core.x;
-		int startY = core.y;
 
-		int nx = startX + deltas[d][0];
-		int ny = startY + deltas[d][1];
-		while (isIn(nx, ny)) {
-			if(copyMap[nx][ny] == 1 || copyMap[nx][ny] == -1) {
-				return false;
-			}
-			copyMap[nx][ny] = -1;
-			nx = nx + deltas[d][0];
-			ny = ny + deltas[d][1];
-		}
-		return true;
-	}
 
 	private static boolean isIn(int x, int y) {
 		return 0 <= x && x < N && 0 <= y && y < N;
