@@ -1,5 +1,7 @@
+package bj.g4;
+
 /**
- @author 김영욱
+@author 김영욱
  @since 2023.08.16
  @see https://www.acmicpc.net/problem/2580
  @git
