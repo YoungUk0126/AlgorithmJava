@@ -115,7 +115,4 @@ public class SW_D4_프로세서연결하기_부분집합 {
 		}
 		return true;
 	}
-	
-	
-
 }

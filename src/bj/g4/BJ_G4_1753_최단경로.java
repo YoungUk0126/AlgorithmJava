@@ -80,7 +80,6 @@ public class BJ_G4_1753_최단경로 {
 				}
 			}
 		}
-		
 	}
 
 	static class Node implements Comparable<Node>{
