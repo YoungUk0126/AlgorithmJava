@@ -29,18 +29,30 @@ public class BJ_G4_17404_RGB거리2 {
 				arr[i][j] = Integer.parseInt(tokens.nextToken());
 			}
 		}
-		for(int i=0; i<3; i++) {
-			dp[0][i] = arr[0][i];
-		}
+		
 		// 빨간색 집, 파란색 집, 초록색 집 가는거 따로 계산해줘야함(고쳐라 여기)
-		for(int i=1; i<n; i++) {
-			for(int j=0; j<3; j++) {
-				// 세가지들 선택해서 나머지 두자리에 더해줌
-				for(int k=1; k<3; k++) {
-					int r = (j+k) % 3;
-					dp[i][j] = Math.min(dp[i-1][r] + arr[i][j], dp[i][j]);
+		for(int l=0; l<3; l++) {
+			for(int i=0; i<3; i++) {
+				if(i == l)dp[0][i] = arr[0][i];
+				else dp[0][i] = Integer.MAX_VALUE - 1001;
+			}
+			for(int i=1; i<n; i++) {
+				for(int j=0; j<3; j++) {
+					// 세가지들 선택해서 나머지 두자리에 더해줌
+					for(int k=1; k<3; k++) {
+						int r = (j+k) % 3;
+						dp[i][j] = Math.min(dp[i-1][r] + arr[i][j], dp[i][j]);
+					}
 				}
 			}
+			for(int i=0; i<n; i++) {
+				for(int j=0; j<3; j++) {
+					System.out.print(dp[i][j] + " ");
+				}
+				System.out.println();
+			}
+			System.out.println();
+			System.out.println();
 		}
 		int a = Math.min(dp[n-1][0], dp[n-1][1]);
 		int b = Math.min(dp[n-1][1], dp[n-1][2]);
