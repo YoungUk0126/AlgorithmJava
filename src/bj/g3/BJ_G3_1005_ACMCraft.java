@@ -27,12 +27,10 @@ public class BJ_G3_1005_ACMCraft {
 	static StringBuilder builder = new StringBuilder();
 	static StringTokenizer tokens;
 	
-	static int T,N,K,end;
+	static int T,N,K,end,ans;
 	static ArrayList<ArrayList<Integer>> graph;
 	static Queue<Integer> q;
 	static int[] inDegree, costs;
-	
-	
 	
 
 	public static void main(String[] args) throws IOException{
@@ -42,6 +40,8 @@ public class BJ_G3_1005_ACMCraft {
 			tokens = new StringTokenizer(input.readLine());
 			N = Integer.parseInt(tokens.nextToken());
 			K = Integer.parseInt(tokens.nextToken());
+			ans = 0;
+			graph = new ArrayList<>();
 			
 			inDegree = new int[N+1];
 			costs = new int[N+1];
@@ -51,7 +51,7 @@ public class BJ_G3_1005_ACMCraft {
 				costs[i] = Integer.parseInt(tokens.nextToken());
 			}
 			
-			for(int i=1; i<=N; i++) {
+			for(int i=0; i<=N; i++) {
 				graph.add(new ArrayList<>());
 			}
 			
@@ -72,9 +72,33 @@ public class BJ_G3_1005_ACMCraft {
 				}
 			}
 			
+			bfs();
+			builder.append(ans).append("\n");
+		}
+		System.out.println(builder);
+
+	}
+	static void bfs() {
+		int max=0;
+		while(!q.isEmpty()) {
+			int nodeNo = q.poll();
+			System.out.println("now :"+ nodeNo);
+			max=0;
+			if(nodeNo == end) {
+				return;
+			}
+			ArrayList<Integer> now = graph.get(nodeNo);
+			for(int i: now) {
+				inDegree[i]--;
+				max = Math.max(max, costs[i]);
+				if(inDegree[i] == 0) {
+					q.offer(i);
+				}
+			}
+			System.out.println("max : "+ max);
+			ans += max;
 			
 		}
-
 	}
 
 }
