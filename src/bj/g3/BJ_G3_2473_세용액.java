@@ -30,7 +30,7 @@ public class BJ_G3_2473_세용액 {
 	static StringBuilder builder = new StringBuilder();
 	static StringTokenizer tokens;
 	
-	static int N, left, right, arr[], min, mid;
+	static int N, left, right, arr[], min, mid, ans[], ansLeft;
 	
 
 	public static void main(String[] args) throws IOException{
@@ -39,6 +39,7 @@ public class BJ_G3_2473_세용액 {
 		left = 0;
 		right = 1;
 		min = Integer.MAX_VALUE;
+		ans = new int[3];
 		
 		tokens = new StringTokenizer(input.readLine());
 		for(int i=0; i<arr.length; i++) {
@@ -53,15 +54,14 @@ public class BJ_G3_2473_세용액 {
 			if (sum + arr[mid] == 0) {
 				break;
 			}
-			if(min > Math.abs(sum)) {
-				
-			}
 			if(sum > 0) {
 				right--;
 			}
+			else {
+				left++;
+			}
 			
 		}
-		int ans[] = new int[3];
 		ans[0] = arr[left];
 		ans[1] = arr[right];
 		ans[2] = arr[mid];
@@ -80,6 +80,9 @@ public class BJ_G3_2473_세용액 {
 			mid = (left + right) / 2;
 			if(sum + arr[mid] == 0) {
 				return mid;
+			}
+			if(min > Math.abs(sum + arr[mid])) {
+				min = Math.abs(sum + arr[mid]);
 			}
 			else if(sum+arr[mid] < 0) {
 				left = mid+1;
