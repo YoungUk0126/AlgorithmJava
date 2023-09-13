@@ -31,15 +31,15 @@ public class BJ_G3_2473_세용액 {
 	static StringBuilder builder = new StringBuilder();
 	static StringTokenizer tokens;
 	
-	static int N, left, right, arr[], mid, ans[], ansLeft;
-	static long min;
+	static int N, left, right,mid;
+	static long min, ans[], arr[];
 	
 
 	public static void main(String[] args) throws IOException{
 		N = Integer.parseInt(input.readLine());
-		arr = new int[N];
-		min = Integer.MAX_VALUE;
-		ans = new int[3];
+		arr = new long[N];
+		min = Long.MAX_VALUE;
+		ans = new long[3];
 		
 		tokens = new StringTokenizer(input.readLine());
 		for(int i=0; i<arr.length; i++) {
