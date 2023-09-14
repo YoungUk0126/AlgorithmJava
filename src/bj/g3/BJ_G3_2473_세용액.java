@@ -9,10 +9,10 @@ import java.util.StringTokenizer;
 
 /**
 @author 김영욱
-@since 2023. 09 12
+@since 2023. 09. 12
 @see https://www.acmicpc.net/problem/2473
 @git
-@performance
+@performance 183ms
 @category #
 @note
 음수부터 양수까지 용액의  특성값이 주어진다.
