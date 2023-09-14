@@ -87,9 +87,6 @@ static BufferedReader input = new BufferedReader(new InputStreamReader(System.in
 		
 		total = dfs(0, 0, 0);
 		System.out.println(total);
-		
-		
-
 	}
 	private static int dfs(int step, int left, int right) {
 		// 기저조건
@@ -102,7 +99,6 @@ static BufferedReader input = new BufferedReader(new InputStreamReader(System.in
 		// 왼발로 갈 경우를 계산,
 		// 왼발의 현재 위치에서 가려는 곳으로 갈때 나오는 힘 + 다음 재귀 함수(left를 옮겨줌)
 		int leftScore = force(left, move[step]) + dfs(step+1, move[step], right);
-		
 
 		// 오른발로 갈 경우를 계산,
 		// 오른발의 현재 위치에서 가려는 곳으로 갈때 나오는 힘 + 다음 재귀 함수(right를 옮겨줌)
