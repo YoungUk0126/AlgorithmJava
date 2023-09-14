@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.StringTokenizer;
-//import java.lang.Math;
+import java.lang.Math;
 
 /**
 @author 김영욱

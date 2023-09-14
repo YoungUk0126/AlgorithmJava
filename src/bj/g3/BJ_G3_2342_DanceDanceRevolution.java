@@ -71,7 +71,8 @@ Switch문으로 case를 나눠
 
 */
 public class BJ_G3_2342_DanceDanceRevolution {
-	static BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
+	
+static BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
 	
 	static int total, move[], dp[][][];
 	public static void main(String[] args) throws IOException {
