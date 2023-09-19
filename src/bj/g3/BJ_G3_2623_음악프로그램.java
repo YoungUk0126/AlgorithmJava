@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Queue;
 import java.util.StringTokenizer;
@@ -36,7 +37,7 @@ public class BJ_G3_2623_음악프로그램 {
 	static StringBuilder builder = new StringBuilder();
 	static StringTokenizer tokens;
 	
-	static int N,M, ansCnt, inDegrees[], ans[];
+	static int N,M,inDegrees[];
 	static int[][] edges;
 	static Queue<Integer> q = new ArrayDeque<>();
 
@@ -46,7 +47,6 @@ public class BJ_G3_2623_음악프로그램 {
 		M = Integer.parseInt(tokens.nextToken());
 		inDegrees = new int[N+1];
 		edges = new int[N+1][N+1];
-		ans = new int[N];
 		
 		int temp[];
 		
@@ -60,20 +60,25 @@ public class BJ_G3_2623_음악프로그램 {
 			for(int j=0; j<temp.length-1; j++) {
 				int from = temp[j];
 				int to = temp[j+1];
-				edges[from][to] = 1;
-				inDegrees[to]++;
+				// 두 PD가 정한 순서가 같다면 2의 진입차수는 2가 아니라 1이기 때문에 if문을 통해
+				// 이미 간선의 정보가 있다면 진입차수를 갱신하지 않도록 처리한다.
+				if(edges[from][to] != 1) { 
+					edges[from][to] = 1;
+					inDegrees[to]++;
+				}
 			}
 		}
 		
-		for(int i=1; i<inDegrees.length; i++) {
+		for(int i=1; i<=N; i++) {
 			if(inDegrees[i] == 0) {
 				q.offer(i);
 			}
 		}
+		ArrayList<Integer> ans = new ArrayList<>();
 		
 		while(!q.isEmpty()) {
 			int now = q.poll();
-			ans[ansCnt++] = now;
+			ans.add(now);
 			
 			for(int i=1; i<N+1; i++) {
 				if(edges[now][i] == 1) {
@@ -83,16 +88,16 @@ public class BJ_G3_2623_음악프로그램 {
 				}
 			}
 		}
-		if(ansCnt == ans.length) {
-			for(int i=0; i<ans.length; i++) {
-				builder.append(ans[i]).append("\n");
+		
+		if(ans.size() != N) {
+			System.out.println(0);
+		}
+		else {
+			for(int i=0; i<N; i++) {
+				builder.append(ans.get(i)).append("\n");
 			}
 			System.out.println(builder);
 		}
-		else {
-			System.out.println("0");
-		}
-
 	}
 
 }
