@@ -80,6 +80,9 @@ public class BJ_G1_17472_다리만들기2 {
 		Collections.sort(graph);
 		
 		for(bridge line: graph) {
+			System.out.println("from : " + line.from);
+			System.out.println("to : " + line.to);
+			System.out.println(line.weight);
             int aRoot = find(line.from);
             int bRoot = find(line.to);
             if(aRoot == bRoot) continue;
@@ -108,9 +111,9 @@ public class BJ_G1_17472_다리만들기2 {
 					y = ny;
 					nx = x + deltas[d][0];
 					ny = y + deltas[d][1];
-					System.out.println("nx : " + nx);
-					System.out.println("ny : " + ny);
-					System.out.println("weight : " + weight);
+//					System.out.println("nx : " + nx);
+//					System.out.println("ny : " + ny);
+//					System.out.println("weight : " + weight);
 					if(isIn(nx,ny) && map[nx][ny] == 0) weight++;
 					else break;
 				}
