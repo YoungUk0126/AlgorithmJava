@@ -46,6 +46,7 @@ public class BJ_G3_1941_소문난칠공주 {
 	static char[][] students = new char[5][5];
 	static int[][] deltas = {{-1,0}, {1,0}, {0,-1}, {0,1}};
 	static int[] nums;
+	static int ans;
 	
 	public static void main(String[] args) throws IOException{
 		for(int i=0; i<5; i++) {
@@ -58,36 +59,38 @@ public class BJ_G3_1941_소문난칠공주 {
 		for(int i=0; i<25; i++) {
 			nums[i] = i;
 		}
-		Combination(0, 0, new int[7]);
+		Combination(0, 0, new int[7], 0);
+		System.out.println(ans);
 	}
 	
-	static void Combination(int cnt, int start, int[] choosed) {
+	static void Combination(int cnt, int start, int[] choosed, int yCnt) {
 		if(cnt == choosed.length) {
-			int yCnt = 0;
-			for(int j=0; j<choosed.length; j++) {
-				int index = choosed[j];
-				// Y가 3명 이상이면
-				if (students[index/5][index%5] == 'Y') yCnt++;
-				if(yCnt > 3) {
-					return;
-				}
-				bfs(choosed[0]/5, choosed[0]%5);
+			// 모두 이어져 있는지 확인
+			if(bfs(choosed[0]/5 , choosed[0]%5, choosed)) {
+				ans++;
 			}
-			System.out.println(Arrays.toString(choosed));
 			return;
 		}
 		
 		for(int i=start; i<nums.length; i++) {
 			choosed[cnt] = nums[i];
-			Combination(cnt + 1, i + 1, choosed);
+			int index = choosed[cnt];
+			if(students[index/5][index%5] == 'Y') {
+				if(yCnt+1 > 3) return;
+				Combination(cnt + 1, i + 1, choosed, yCnt + 1);
+			}
+			else
+				Combination(cnt + 1, i + 1, choosed, yCnt);
 		}
 		
 	}
 
-	private static void bfs(int i, int j) {
-		boolean [] visited = new boolean[7];
+	private static boolean bfs(int i, int j, int[] choosed) {
+		boolean [][] visited = new boolean[5][5];
 		Queue<int []> q = new ArrayDeque<>();
 		q.offer(new int[] {i,j});
+		visited[i][j] = true;
+		int cnt = 1;
 		
 		while(!q.isEmpty()) {
 			int[] now = q.poll();
@@ -96,10 +99,25 @@ public class BJ_G3_1941_소문난칠공주 {
 				int nx = now[0] + deltas[d][0];
 				int ny = now[1] + deltas[d][1];
 				
-				
+				if(isIn(nx, ny) && !visited[nx][ny] && isInChoosed(nx, ny, choosed)) {
+					cnt++;
+					visited[nx][ny] = true;
+					q.offer(new int[] {nx, ny});
+				}
 			}
 		}
+		if(cnt == 7) return true;
+		else return false;
 		
+	}
+	
+	private static boolean isInChoosed(int x, int y, int[] choosed) {
+		for(int num: choosed) {
+			if(num / 5 == x && num % 5 == y) {
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	private static boolean isIn(int x, int y) {
