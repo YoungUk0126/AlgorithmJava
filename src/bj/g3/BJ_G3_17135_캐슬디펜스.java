@@ -48,12 +48,15 @@ public class BJ_G3_17135_캐슬디펜스 {
 	static ArrayList<int[]> archers;
 	static int forCom[];
 	static int[][] map;
-	static int[][] deltas = {{-1,0},{0,-1}, {0,1}}; //상좌우
+	static int[][] deltas = {{0,-1}, {-1,0}, {0,1}}; //좌상우
+	static boolean[][] killed;
+	static Queue<int []> target = new ArrayDeque<>();
 	public static void main(String[] args) throws IOException {
 		// TODO Auto-generated method stub
 		tokens = new StringTokenizer(input.readLine());
 		N = Integer.parseInt(tokens.nextToken());
 		M = Integer.parseInt(tokens.nextToken());
+		// 궁수의 공격 거리 제한
 		D = Integer.parseInt(tokens.nextToken());
 		max = Integer.MIN_VALUE;
 		forCom = new int[M];
@@ -61,6 +64,7 @@ public class BJ_G3_17135_캐슬디펜스 {
 			forCom[m] = m;
 		}
 		
+		// 궁수를 위해 행을 한개 더 받았음
 		map = new int[N+1][M];
 		for(int i=0; i<N; i++) {
 			tokens = new StringTokenizer(input.readLine());
@@ -68,9 +72,15 @@ public class BJ_G3_17135_캐슬디펜스 {
 				map[i][j] = Integer.parseInt(tokens.nextToken());
 			}
 		}
+		for(int j=0; j<M; j++) {
+			map[N][j] = 0;
+		}
 		archers = new ArrayList<>();
 		makeCombination(0, 0, new int[3]);
-		playGame();
+		for(int[] archer : archers) {
+			playGame(archer);
+		}
+		System.out.println(max);
 	}
 	
 	private static void makeCombination(int cnt, int start, int[] choosed) { 
@@ -86,66 +96,69 @@ public class BJ_G3_17135_캐슬디펜스 {
 		}
 	}
 
-	private static void playGame() {
-		// TODO Auto-generated method stub
-		int turn = 0;
-		// 조합 별로
-		for (int i = 0; i < archers.size(); i++) {
-			// 맵의 행만큼 게임을 진행해야함
-			for (turn = 0; turn < N; turn++) {
-				// 조합 안에 궁수 세명 위치마다 가장 가까운 적 찾아
-				for (int col : archers.get(i)) {
-					bfs(N, col);
-				}
+	private static void playGame(int[] archer) {
+		killed = new boolean[N+1][M];
+		int cnt = 0;
+		// 행만큼 제거
+		for(int i=N; i>=0; i--) {
+			for(int col: archer) {
+				bfs(i, col);
+			}
+			for(;0<target.size();) {
+				int[] t = target.poll();
+				killed[t[0]][t[1]] = true;
 			}
 		}
+		
+		for(int i=0; i<=N; i++) {
+			for(int j=0; j<M; j++) {
+				if(killed[i][j]) cnt++;
+			}
+		}
+		
+		max = Math.max(max, cnt);
 	}
-
-	private static void bfs(int startX, int startY) {
-		// 준비물 챙겨라잇
-		Queue<int[]> q = new ArrayDeque<>();
-		boolean v[][] = new boolean[N][M];
-		int min = Integer.MAX_VALUE;
-		int[] target = new int[2];
+	private static void bfs(int row, int col) {
+		int startX = row;
+		int startY = col;
 		
-		q.offer(new int[] {startX, startY});
-		v[startX][startY] = true;
+		Queue<int []> q = new ArrayDeque<>();
+		boolean[][] v = new boolean[N+1][M];
 		
-		/*
-		 * 1. 거리가 D이하인 적 중에서 가장 가까운 적
-		 * 2. 여럿일 경우 가장 왼쪽에 있는 적
-		 * 3. 한 놈이 계속 맞을 수도 있음
-		 */
-		while(!q.isEmpty()) {
-			int[] temp = q.poll();
-			
-			int x = temp[0];
-			int y = temp[1];
-			
-			for(int d=0; d<3; d++) {
-				int nx = x + deltas[d][0];
-				int ny = y + deltas[d][1];
+		q.offer(new int[] {row, col});
+		
+		outer: while(!q.isEmpty()) {
+			int qsize = q.size();
+			for(int i=0; i<qsize; i++) {
+				int[] next = q.poll();
 				
-				if(isIn(nx, ny) && map[nx][ny] == 1 && !v[nx][ny] 
-						&& isRange(startX, startY, nx, ny)){
-					v[nx][ny] = true;
-					q.offer(new int[] {nx, ny});
-					// 다음에 갈놈의 거리가 원래 적과의 거리보다 짧다면 타겟팅을 바꿈
-					int distance = Math.abs(startX - nx) + Math.abs(startY - ny);
-					if(min > distance) {
-						target[0] = nx;
-						target[1] = ny;
-						min = distance;
+				for(int d=0; d<3; d++) {
+					int nx = next[0] + deltas[d][0];
+					int ny = next[1] + deltas[d][1];
+					
+					// 맵안에 있고 쏠 수 있는 거리고 방문 안했고 같은 행 아니니?
+					if(isIn(nx, ny) && isRange(nx, ny, startX, startY) && !v[nx][ny] && startX != nx) {
+						v[nx][ny] = true;
+						// 적이 있고 전 턴에 안죽였니?
+						if(map[nx][ny] == 1 && !killed[nx][ny]) {
+							// 왼쪽 부터 찾기 때문에 가장 왼쪽인게 확실하므로 무조건 타겟에 넣음
+							target.offer(new int[] {nx, ny});
+							break outer;
+						}
+						else {
+							q.offer(new int[] {nx, ny});
+						}
 					}
 				}
 			}
 		}
 	}
+
 	private static boolean isIn(int x, int y) {
-		return 0<x && x<=N && 0<y && y<=M;
+		return 0<=x && x<=N && 0<=y && y<M;
 	}
 	private static boolean isRange(int ax, int ay, int x, int y) {
-		if(D >= Math.abs(ax - x) + Math.abs(ay - y)) {
+		if(D >= (Math.abs(ax - x) + Math.abs(ay - y))) {
 			return true;
 		}
 		return false;

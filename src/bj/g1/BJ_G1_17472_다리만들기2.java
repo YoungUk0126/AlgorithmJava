@@ -79,16 +79,23 @@ public class BJ_G1_17472_다리만들기2 {
 		// 정렬^^
 		Collections.sort(graph);
 		
+		// 최소 가중치인 간선부터 돌면서 Union을 해준다.
 		for(bridge line: graph) {
-			System.out.println("from : " + line.from);
-			System.out.println("to : " + line.to);
-			System.out.println(line.weight);
             int aRoot = find(line.from);
             int bRoot = find(line.to);
             if(aRoot == bRoot) continue;
             union(aRoot, bRoot);
             expensive += line.weight;
         }
+		// 모두 Union이 됐는지 확인
+		// find로 연결이 돼있는지 확인
+		for(int i=2; i<=landCnt; i++) {
+			if(find(i) != find(i-1)) {
+				expensive = 0;
+				break;
+			}
+		}
+		
 		if(expensive == 0) System.out.println(-1);
 		else System.out.println(expensive);
 	}
@@ -111,9 +118,6 @@ public class BJ_G1_17472_다리만들기2 {
 					y = ny;
 					nx = x + deltas[d][0];
 					ny = y + deltas[d][1];
-//					System.out.println("nx : " + nx);
-//					System.out.println("ny : " + ny);
-//					System.out.println("weight : " + weight);
 					if(isIn(nx,ny) && map[nx][ny] == 0) weight++;
 					else break;
 				}
@@ -124,27 +128,12 @@ public class BJ_G1_17472_다리만들기2 {
 		}
 	}
 
-	static class bridge implements Comparable<bridge>{
-		int from, to, weight;
-
-		public bridge(int from, int to, int weight) {
-			super();
-			this.from = from;
-			this.to = to;
-			this.weight = weight;
-		}
-
-		@Override
-		public int compareTo(bridge 다리) {
-            return Integer.compare(weight, 다리.weight);
-		}
-		
-	}
 	
 	private static void makeLand(int startI, int startJ) {
 		Queue<int []> q = new ArrayDeque<>();
 		landCnt++;
 		q.offer(new int[] {startI, startJ});
+		map[startI][startJ] = landCnt;
 		
 		while(!q.isEmpty()) {
 			int[] temp = q.poll();
@@ -161,10 +150,27 @@ public class BJ_G1_17472_다리만들기2 {
 			}
 		}
 	}
-
+	
 	private static boolean isIn(int nx, int ny) {
 		
 		return 0<=nx && nx < N && 0<=ny && ny<M;
+	}
+	
+	static class bridge implements Comparable<bridge>{
+		int from, to, weight;
+
+		public bridge(int from, int to, int weight) {
+			super();
+			this.from = from;
+			this.to = to;
+			this.weight = weight;
+		}
+
+		@Override
+		public int compareTo(bridge 다리) {
+            return Integer.compare(weight, 다리.weight);
+		}
+		
 	}
 
 }
