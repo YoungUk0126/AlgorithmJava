@@ -49,7 +49,7 @@ public class BJ_G5_29792_규칙적인보스돌이 {
 
 	static int N, M, K;
 	static long[] damage;
-	static long[][] bossList;
+	static long[] V, H;
 	static long[] dp;
 	static long ans;
 	static int forCombi[];
@@ -63,69 +63,47 @@ public class BJ_G5_29792_규칙적인보스돌이 {
 		M = Integer.parseInt(tokens.nextToken());
 		K = Integer.parseInt(tokens.nextToken());
 
-		damage = new long[N];
-		bossList = new long[K][2];
-		forCombi = new int[N];
+		damage = new long[N+1];
+		H = new long[K+1];
+		V = new long[K+1];
 
-		for (int i = 0; i < N; i++) {
+		for (int i = 1; i <= N; i++) {
 			damage[i] = Long.parseLong(input.readLine());
-			forCombi[i] = i;
 		}
 		for (int i = 0; i < K; i++) {
 			tokens = new StringTokenizer(input.readLine());
-			bossList[i][0] = Long.parseLong(tokens.nextToken());
-			bossList[i][1] = Long.parseLong(tokens.nextToken());
-			bossMin = Math.min(bossMin, bossList[i][0]);
-		}
-
-		for (int i = 0; i < N; i++) {
-			// 캐릭터 1초 데미지,  캐릭터가 갖고있는 총 데미지, 현재 얻은 메소,
-			mAns = 0;
-			killBoss(damage[i], 900*damage[i], 0, 0);
-			pq.offer(mAns);
+			H[i] = Long.parseLong(tokens.nextToken());
+			V[i] = Long.parseLong(tokens.nextToken());
 		}
 		
-		for(int i=0; i<M; i++) {
-			ans += pq.poll();
-		}
-		System.out.println(ans);
-//		makeCombination(0, 0, new int[M]);
+		// dp테이블
+		// [보스종류][시간] = 메소
+		
+		
 	}
 
 	// 캐릭터가 넣을 수 있는 총 딜량으로 얻을 수 있는 최대 메소를 반환
-	static void killBoss(long secDamage, long remainDamage, long meso, int bossIdx) {
-		// 가지치기 조건
-		if(remainDamage < bossMin || remainDamage <= secDamage*2) {
-			mAns = Math.max(mAns, meso);
-			return;
-		}
-		// 기저 조건
-		if(bossIdx == K) {
-//			System.out.println(meso);
-			mAns = Math.max(mAns, meso);
-			return;
-		}
-		// 데미지 남나 안남나 계산
-		long newRemainDamage = remainDamage - bossList[bossIdx][0];
-		if(newRemainDamage >= 0) {
-			// 잡아
-			killBoss(secDamage, newRemainDamage, meso+bossList[bossIdx][1], bossIdx+1);
-		}
-		// 안잡아
-		killBoss(secDamage,  remainDamage, meso, bossIdx+1);
-	}
+//	static void killBoss(long secDamage, long remainDamage, long meso, int bossIdx) {
+//		// 가지치기 조건
+//		if(remainDamage < bossMin || remainDamage <= secDamage*2) {
+//			mAns = Math.max(mAns, meso);
+//			return;
+//		}
+//		// 기저 조건
+//		if(bossIdx == K) {
+////			System.out.println(meso);
+//			mAns = Math.max(mAns, meso);
+//			return;
+//		}
+//		// 데미지 남나 안남나 계산
+//		long newRemainDamage = remainDamage - bossList[bossIdx][0];
+//		if(newRemainDamage >= 0) {
+//			// 잡아
+//			killBoss(secDamage, newRemainDamage, meso+bossList[bossIdx][1], bossIdx+1);
+//		}
+//		// 안잡아
+//		killBoss(secDamage,  remainDamage, meso, bossIdx+1);
+//	}
 
-	static void makeCombination(int start, int nth, int choosed[]) {
-		if (nth == choosed.length) {
-			System.out.println(Arrays.toString(choosed));
-			return;
-		}
-
-		for (int i = start; i < N; i++) {
-			choosed[nth] = forCombi[i];
-			makeCombination(i + 1, nth + 1, choosed);
-		}
-
-	}
 
 }
