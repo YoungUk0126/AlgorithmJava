@@ -17,7 +17,9 @@ public class BJ_G5_12865_평범한배낭 {
 
 	public static void main(String[] args) throws IOException{
 		tokens = new StringTokenizer(input.readLine());
+		// 물건 종류
 		N = Integer.parseInt(tokens.nextToken());
+		// 들 수 있는 무게
 		K = Integer.parseInt(tokens.nextToken());
 		
 		// 물건의 무게, 물건의 가치

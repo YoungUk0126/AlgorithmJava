@@ -50,7 +50,7 @@ public class BJ_G5_29792_규칙적인보스돌이 {
 	static int N, M, K;
 	static long[] damage;
 	static long[] V, H;
-	static long[] dp;
+	static long[][] dp;
 	static long ans;
 	static int forCombi[];
 	static long mAns;
@@ -63,14 +63,14 @@ public class BJ_G5_29792_규칙적인보스돌이 {
 		M = Integer.parseInt(tokens.nextToken());
 		K = Integer.parseInt(tokens.nextToken());
 
-		damage = new long[N+1];
+		damage = new long[N];
 		H = new long[K+1];
 		V = new long[K+1];
 
-		for (int i = 1; i <= N; i++) {
+		for (int i = 0; i < N; i++) {
 			damage[i] = Long.parseLong(input.readLine());
 		}
-		for (int i = 0; i < K; i++) {
+		for (int i = 1; i <= K; i++) {
 			tokens = new StringTokenizer(input.readLine());
 			H[i] = Long.parseLong(tokens.nextToken());
 			V[i] = Long.parseLong(tokens.nextToken());
@@ -78,6 +78,28 @@ public class BJ_G5_29792_규칙적인보스돌이 {
 		
 		// dp테이블
 		// [보스종류][시간] = 메소
+		for(long d: damage) {
+			dp = new long[K+1][901];
+			// 보스의 종류
+			for(int i=1; i<=K; i++) {
+				// 15분을 1초로 환산한거
+				for(int j=1; j<=900; j++) {
+					if(H[i] > (d*j)) {
+						dp[i][j] = dp[i-1][j];
+					}
+					else {
+						int temp = (int) ((d * j) - H[i]);
+						if(temp >= 0) {
+							// 모르겠다 GG
+							dp[i][j] =  Math.max(dp[i-1][j], dp[i-1][temp] + V[i]);
+						}
+					}
+				}
+			}
+		}
+		System.out.println(dp[K-1][900]);
+		System.out.println(dp[K][900]);
+		
 		
 		
 	}
