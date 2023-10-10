@@ -54,7 +54,7 @@ public class BJ_G3_1941_소문난칠공주 {
 			for(int j=0; j<5; j++) {
 				students[i][j] = temp.charAt(j);
 			}
-		}																																																																							System.out.println("░░░░░░░░░░░░░░░░░░░░░░░░░░\r\n" + "░░░░░█▀▀░█▀█░█▀▀░█░█░░░░░░\r\n" + "░░░░░█▀▀░█▀█░▀▀█░▀█▀░░░░░░\r\n" + "░░░░░▀▀▀░▀░▀░▀▀▀░░▀░░░░░░░\r\n" + "░░░░░░░░░░░░░░░░░░░░░░░░░░\r\n" + "⎛⎝(•‿•)⎠⎞⎛⎝(•‿•)⎠⎞⎛⎝(•‿•)⎠⎞⎛⎝(•‿•)⎠⎞");
+		}		
 		nums = new int[25];
 		for(int i=0; i<25; i++) {
 			nums[i] = i;
@@ -64,9 +64,9 @@ public class BJ_G3_1941_소문난칠공주 {
 	}
 	
 	static void Combination(int cnt, int start, int[] choosed, int yCnt) {
+		if(yCnt > 3) return;
 		if(cnt == choosed.length) {
-			// 모두 이어져 있는지 확인
-			if(bfs(choosed[0]/5 , choosed[0]%5, choosed)) {
+			if(bfs(choosed)) {
 				ans++;
 			}
 			return;
@@ -75,8 +75,8 @@ public class BJ_G3_1941_소문난칠공주 {
 		for(int i=start; i<nums.length; i++) {
 			choosed[cnt] = nums[i];
 			int index = choosed[cnt];
+			
 			if(students[index/5][index%5] == 'Y') {
-				if(yCnt+1 > 3) return;
 				Combination(cnt + 1, i + 1, choosed, yCnt + 1);
 			}
 			else
@@ -85,9 +85,11 @@ public class BJ_G3_1941_소문난칠공주 {
 		
 	}
 
-	private static boolean bfs(int i, int j, int[] choosed) {
+	private static boolean bfs(int[] choosed) {
 		boolean [][] visited = new boolean[5][5];
 		Queue<int []> q = new ArrayDeque<>();
+		int i = choosed[0] / 5;
+		int j = choosed[0] % 5;
 		q.offer(new int[] {i,j});
 		visited[i][j] = true;
 		int cnt = 1;
