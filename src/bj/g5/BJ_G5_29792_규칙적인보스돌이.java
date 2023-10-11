@@ -52,9 +52,6 @@ public class BJ_G5_29792_규칙적인보스돌이 {
 	static long[] V, H;
 	static long[][] dp;
 	static long ans;
-	static int forCombi[];
-	static long mAns;
-	static long bossMin = Long.MAX_VALUE;
 	static PriorityQueue<Long> pq = new PriorityQueue<Long>(Collections.reverseOrder());
 
 	public static void main(String[] args) throws IOException {
@@ -75,31 +72,35 @@ public class BJ_G5_29792_규칙적인보스돌이 {
 			H[i] = Long.parseLong(tokens.nextToken());
 			V[i] = Long.parseLong(tokens.nextToken());
 		}
-		
 		// dp테이블
 		// [보스종류][시간] = 메소
 		for(long d: damage) {
 			dp = new long[K+1][901];
 			// 보스의 종류
 			for(int i=1; i<=K; i++) {
+				// 보스를 현재 캐릭터의 데미지로 잡는데 걸리는 시간
+				long huntingTime = H[i] / d;
+				// 나눈 값이 딱나누어 떨어지지 않는다면 1초미만의 딜링은 포함되지 않도록 1을 늘려준다.
+				if(H[i] % d != 0) huntingTime++;
 				// 15분을 1초로 환산한거
 				for(int j=1; j<=900; j++) {
 					if(H[i] > (d*j)) {
 						dp[i][j] = dp[i-1][j];
 					}
 					else {
-						int temp = (int) ((d * j) - H[i]);
-						if(temp >= 0) {
-							// 모르겠다 GG
-							dp[i][j] =  Math.max(dp[i-1][j], dp[i-1][temp] + V[i]);
-						}
+						// 보스를 잡는데 걸리는 시간
+						dp[i][j] = Math.max(dp[i-1][j], dp[i-1][(int)(j-huntingTime)]+V[i]);
 					}
 				}
 			}
+			pq.offer(dp[K][900]);
 		}
-		System.out.println(dp[K-1][900]);
-		System.out.println(dp[K][900]);
+		long sum = 0;
+		for(int i=0; i<M; i++) {
+			sum += pq.poll();
+		}
 		
+		System.out.println(sum);
 		
 		
 	}
