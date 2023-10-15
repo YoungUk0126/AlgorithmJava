@@ -61,8 +61,6 @@ public class BJ_G5_2293_동전1 {
 			}
 		}
 		System.out.println(dp[money]);
-		
-
 	}
 
 }
