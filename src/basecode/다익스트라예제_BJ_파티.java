@@ -1,4 +1,4 @@
-package bj.g3;
+package basecode;
 /**
 @author 김영욱
 @since 2023. 10. 15.
@@ -35,7 +35,7 @@ import java.util.Arrays;
 import java.util.PriorityQueue;
 import java.util.StringTokenizer;
 
-public class BJ_G3_1238_파티 {
+public class 다익스트라예제_BJ_파티 {
 	
 	static BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
 	static StringTokenizer tokens;
