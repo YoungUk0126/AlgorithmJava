@@ -67,10 +67,7 @@ public class BJ_G4_1197_최소스패닝트리 {
         Arrays.sort(간선리스트);
 
         for(간선 line: 간선리스트) {
-            int aRoot = find(line.A);
-            int bRoot = find(line.B);
-            if(aRoot == bRoot) continue;
-            union(aRoot, bRoot);
+            if(union(line.A, line.B)) continue;
             expensive += line.W;
         }
 

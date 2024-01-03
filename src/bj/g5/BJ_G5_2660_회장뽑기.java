@@ -5,8 +5,8 @@ package bj.g5;
 @since 2024. 01. 03
 @see https://www.acmicpc.net/problem/2660
 @git
-@performance 
-@category #
+@performance 80ms
+@category 플로이드워셜
 @note
 
 축구 응원 모임에서 회장을 선출하려 한다.
@@ -95,7 +95,7 @@ public class BJ_G5_2660_회장뽑기 {
             }
         }
         Collections.sort(candidate);
-        
+
         builder.append(maxScore).append(" ").append(candidate.size()).append("\n");
         for(int t: candidate) {
             builder.append(t).append(" ");
