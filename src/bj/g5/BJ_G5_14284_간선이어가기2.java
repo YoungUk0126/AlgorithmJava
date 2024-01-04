@@ -17,13 +17,7 @@ package bj.g5;
 
 s와 t가 연결이 되는 시점의 간선의 가중치의 합이 최소가 되게 추가하는 간선의 순서를 조정할 때, 그 최솟값을 구하시오.
 
-크루스칼 == MST(union-find)
-
-1. 간선의 가중치를 오름차순으로 정렬한다.
-2. 정렬된 간선 중에서 순서대로(가중치가 낮은 순으로) 간선을 조회한다.
-    2-1. 간선을 선택하게 될 때, 사이클이 형성된다면 다음 간선으로 넘어간다.
-    2-2. 사이클이 형성되지 않는다면 해당 간선을 선택한다.
-3. 정점의 개수가 N일때, N-1만큼 간선을 뽑았다면 반복문을 종료한다.
+다익스트라로 풀어야 하는 문제
 
 
 
@@ -33,55 +27,58 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
+import java.util.PriorityQueue;
 import java.util.StringTokenizer;
 
 public class BJ_G5_14284_간선이어가기2 {
     static BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
     static StringTokenizer tokens;
     static StringBuilder builder = new StringBuilder();
+    static PriorityQueue<Node> PQ = new PriorityQueue<>();
 
-    static int N,M;
-    static line[] lineList;
-    static int[] parent;
-    static int minTotal;
+    static int N,M,expensive;
+    static ArrayList<ArrayList<Node>> graph = new ArrayList<>();
+    static int[] dist;
 
     public static void main(String[] args) throws IOException{
         tokens = new StringTokenizer(input.readLine());
         N = Integer.parseInt(tokens.nextToken());
         M = Integer.parseInt(tokens.nextToken());
 
-        parent = new int[N+1];
-        lineList = new line[N+1];
+        for(int i=0; i<=N; i++) {
+			graph.add(new ArrayList<Node>());
+		}
 
-        for(int i=1; i<=M; i++) {
+        dist = new int[N+1];
+
+        for(int i=0; i<M; i++) {
             tokens = new StringTokenizer(input.readLine());
             int a = Integer.parseInt(tokens.nextToken());
             int b = Integer.parseInt(tokens.nextToken());
             int c = Integer.parseInt(tokens.nextToken());
-
-            lineList[i] = new line(a, b, c);
+            
+            // 2차원 ArrayList
+            graph.get(a).add(new Node(b, c));
 
         }
-        // make 부분
-        for(int i=0; i<parent.length; i++) {
-            parent[i] = i;
-        }
+
+        tokens = new StringTokenizer(input.readLine());
+        int s = Integer.parseInt(tokens.nextToken());
+        int t = Integer.parseInt(tokens.nextToken());
+
 
     }
 
-    private static class line implements Comparable<line>{
-        int a,b,w;
+    private static class Node implements Comparable<Node>{
+        int index, weight;
 
-        line(int a, int b, int w) {
-            this.a = a;
-            this.b = b;
-            this.w = w;
+        Node(int a, int w) {
+            this.index = a;
+            this.weight = w;
         }
         @Override
-        public int compareTo(line l) {
-            return w - l.w;
+        public int compareTo(Node l) {
+            return weight - l.weight;
         }
     }
 }
