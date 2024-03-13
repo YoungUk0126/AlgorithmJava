@@ -29,13 +29,13 @@ import java.util.StringTokenizer;
  */
 
 public class BJ_G4_2573_빙산 {
-
     static BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
     static StringTokenizer tokens;
     static StringBuilder builder = new StringBuilder();
-    static int[][] deltas = {{0, 1}, {1, 0}, {0, -1}, {1, 0}};
-    static int N, M;
+    static int[][] deltas = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}};
+    static int N, M, year;
     static int map[][];
+    static int ocean[][];
 
     public static void main(String[] args) throws IOException {
         tokens = new StringTokenizer(input.readLine());
@@ -43,32 +43,113 @@ public class BJ_G4_2573_빙산 {
         M = Integer.parseInt(tokens.nextToken());
 
         map = new int[N][M];
+        ocean = new int[N][M];
+        int x = 0;
+        int y = 0;
 
         for (int i = 0; i < N; i++) {
             tokens = new StringTokenizer(input.readLine());
             for (int j = 0; j < M; j++) {
                 map[i][j] = Integer.parseInt(tokens.nextToken());
+                if(map[i][j] > 0) {
+                    x = i;
+                    y = j;
+                }
+            }
+        }
+        int year = 0;
+        while(true) {
+            int bigIceCnt = checkPiece();
+            if(bigIceCnt >= 2) {
+                break;
+            } else if(bigIceCnt == 0) {
+                year = 0;
+                break;
+            }
+
+            findOcean(x, y);
+            year++;
+        }
+
+        System.out.println(year);
+
+    }
+    static class IceBlock{
+        int x;
+        int y;
+
+        public IceBlock(int x, int y) {
+            this.x = x;
+            this.y = y;
+        }
+    }
+
+    //    모든 블록이 2개로 나눠지지 않고 끝까지 전부 다 녹는다면 0을 출력하는 로직 필요
+    static public void findOcean(int startX, int startY) {
+        Queue<IceBlock> q = new ArrayDeque<>();
+        boolean[][] visited = new boolean[N][M];
+        int oceanCnt;
+
+        for(int i=0; i<N; i++) {
+            for(int j=0; j<M; j++) {
+                if(map[i][j] != 0) {
+                    q.offer(new IceBlock(i, j));
+                    visited[i][j] = true;
+                }
             }
         }
 
+        while(!q.isEmpty()) {
+            IceBlock now = q.poll();
+            int x = now.x;
+            int y = now.y;
 
+            oceanCnt = 0;
 
-    }
+            for(int d=0; d<4; d++) {
+                int nx = x + deltas[d][0];
+                int ny = y + deltas[d][1];
 
-    static public void findOceanBfs() {
-        Queue<int[]> queue = new ArrayDeque<>();
-        boolean[][] visited = new boolean[N][M];
-
-        queue.offer(new int[] {0,0});
-        visited[0][0] = true;
-
-        while(!queue.isEmpty()) {
-
+                if(!isOk(nx, ny)) continue;
+                else if(!visited[nx][ny] && map[nx][ny] == 0){
+                    oceanCnt++;
+                }
+            }
+            if(oceanCnt >= map[x][y]) map[x][y] = 0;
+            else map[x][y] -= oceanCnt;
         }
-
-
     }
 
-    static public void checkPiece() {}
+    static public int checkPiece() {
+        boolean[][] visited = new boolean[N][M];
+        int bigIceCnt = 0;
+        for(int i=0; i<N; i++) {
+            for(int j=0; j<M; j++) {
+                if(!visited[i][j] && map[i][j] > 0) {
+                    dfs(i,j,visited);
+                    bigIceCnt++;
+                }
+            }
+        }
+        return bigIceCnt;
+    }
+
+
+    static public void dfs(int x, int y, boolean[][] visited) {
+        visited[x][y] = true;
+
+        for(int d=0; d<4; d++) {
+            int nx = x + deltas[d][0];
+            int ny = y + deltas[d][1];
+//            기저 조건
+            if(isOk(nx, ny) && !visited[nx][ny] && map[nx][ny] > 0) {
+                dfs(nx, ny, visited);
+            }
+        }
+    }
+
+    static public boolean isOk(int x, int y){
+        return 0 <= x && x < N && 0<= y && y < M;
+    }
 
 }
