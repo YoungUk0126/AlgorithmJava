@@ -10,7 +10,7 @@ public class 좋은아침 {
 //		makePermutation(0, new char[3], new boolean[src.length]);
 //		makeCombination(0, 0, new char[3]);
 //		makeSubSet1(0, new boolean[4]);
-		makeSubSet2();
+//		makeSubSet2();
 	}
 	
 	// 순열
