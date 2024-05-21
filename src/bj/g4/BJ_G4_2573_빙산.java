@@ -52,7 +52,6 @@ import java.util.StringTokenizer;
  */
 
 public class BJ_G4_2573_빙산 {
-
     static BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
     static StringTokenizer tokens;
     static StringBuilder builder = new StringBuilder();
@@ -108,7 +107,11 @@ public class BJ_G4_2573_빙산 {
         }
     }
 
+<<<<<<< HEAD
 //    모든 블록이 2개로 나눠지지 않고 끝까지 전부 다 녹는다면 0을 출력하는 로직 필요
+=======
+    //    모든 블록이 2개로 나눠지지 않고 끝까지 전부 다 녹는다면 0을 출력하는 로직 필요
+>>>>>>> origin/master
     static public void findOcean(int startX, int startY) {
         Queue<IceBlock> q = new ArrayDeque<>();
         boolean[][] visited = new boolean[N][M];
@@ -175,6 +178,9 @@ public class BJ_G4_2573_빙산 {
     static public boolean isOk(int x, int y){
         return 0 <= x && x < N && 0<= y && y < M;
     }
+<<<<<<< HEAD
 
+=======
+>>>>>>> origin/master
 
 }
