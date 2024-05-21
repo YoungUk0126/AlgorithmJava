@@ -3,7 +3,6 @@ package bj.g4;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.sql.Array;
 import java.util.ArrayDeque;
 import java.util.Queue;
 import java.util.StringTokenizer;
@@ -47,11 +46,10 @@ import java.util.StringTokenizer;
  * ...
  * => 가로 길이: 5 + 2 * 48, 빙산 있는 칸 수: 97 * 99, 답: 1 + 5 * 48
  *
- * 아니 왜 미리 빙산이 있는 위치를 N * M만큼 구해서 미리 큐에 담아 놓는게
- * 시간이 더 절약되는지 잘 모르겠다.
  */
 
 public class BJ_G4_2573_빙산 {
+
     static BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
     static StringTokenizer tokens;
     static StringBuilder builder = new StringBuilder();
@@ -107,11 +105,7 @@ public class BJ_G4_2573_빙산 {
         }
     }
 
-<<<<<<< HEAD
-//    모든 블록이 2개로 나눠지지 않고 끝까지 전부 다 녹는다면 0을 출력하는 로직 필요
-=======
     //    모든 블록이 2개로 나눠지지 않고 끝까지 전부 다 녹는다면 0을 출력하는 로직 필요
->>>>>>> origin/master
     static public void findOcean(int startX, int startY) {
         Queue<IceBlock> q = new ArrayDeque<>();
         boolean[][] visited = new boolean[N][M];
@@ -178,9 +172,4 @@ public class BJ_G4_2573_빙산 {
     static public boolean isOk(int x, int y){
         return 0 <= x && x < N && 0<= y && y < M;
     }
-<<<<<<< HEAD
-
-=======
->>>>>>> origin/master
-
 }
