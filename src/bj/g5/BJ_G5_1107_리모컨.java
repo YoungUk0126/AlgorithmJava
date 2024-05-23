@@ -40,7 +40,7 @@ public class BJ_G5_1107_리모컨 {
     static BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
     static StringTokenizer tokens;
 
-    static int numN, M, answer;
+    static int numN, M, answer, answerNum, min;
     static String[] NArray;
     static boolean[] brokenButtons;
 
@@ -49,27 +49,35 @@ public class BJ_G5_1107_리모컨 {
 
     public static void main(String[] args) throws IOException {
         String stringN = input.readLine();
-        if (stringN.equals("100")) {
-            System.out.println("0");
-        } else {
-            NArray = stringN.split("");
-            numN = Integer.parseInt(stringN);
-            M = Integer.parseInt(input.readLine());
-            brokenButtons = new boolean[10];
-
+        NArray = stringN.split("");
+        numN = Integer.parseInt(stringN);
+        M = Integer.parseInt(input.readLine());
+        brokenButtons = new boolean[10];
+        min = Math.abs(numN - 100);
+        if (M != 0){
             tokens = new StringTokenizer(input.readLine());
             for (int i = 0; i < M; i++) {
                 int btn = Integer.parseInt(tokens.nextToken());
                 brokenButtons[btn] = true;
             }
-            answer = Integer.MAX_VALUE;
+        }
+        answer = 10000000;
+        answerNum = 10000000;
+        if (stringN.equals("100")) {
+            System.out.println("0");
+            return;
+        }
+        if (canRemote(numN)) System.out.println(NArray.length);
+        else {
             bfs();
+            int totalClickCnt = answer + Integer.toString(answerNum).length();
+            System.out.println(Math.min(totalClickCnt, min));
         }
     }
 
     private static void bfs() {
         Queue<Integer> q = new ArrayDeque<>();
-        boolean[] visited = new boolean[999999];
+        boolean[] visited = new boolean[1000001];
         int[] deltas = {PLUS, MINUS};
 
         q.offer(numN);
@@ -80,23 +88,33 @@ public class BJ_G5_1107_리모컨 {
 
             for (int i = 0; i < 2; i++) {
                 int nextNum = num + deltas[i];
-                if(canRemote(nextNum)) {
-                    answer = Math.min(Math.abs(numN - nextNum), answer);
+                if (isIn(nextNum) && !visited[nextNum]) {
+                    if (canRemote(nextNum)) {
+                        if(Math.abs(numN - nextNum) <= answer && answerNum > nextNum) {
+                            answer = Math.abs(numN - nextNum);
+                            answerNum = nextNum;
+                        }
+                    }
+                    else {
+                        q.offer(nextNum);
+                        visited[nextNum] = true;
+                    }
                 }
-                q.offer(nextNum);
-                visited[nextNum] = true;
             }
         }
+    }
 
+    static private boolean isIn(int nextNum) {
+        return 0 <= nextNum && nextNum < 1000000;
     }
 
     private static boolean canRemote(int nextNum) {
-        while(nextNum > 10) {
+        while (nextNum >= 10) {
             int temp = nextNum % 10;
-            if(brokenButtons[temp]) return false;
+            if (brokenButtons[temp]) return false;
             nextNum /= 10;
         }
-        if(brokenButtons[nextNum]) return false;
+        if (brokenButtons[nextNum]) return false;
         return true;
     }
 }
