@@ -67,7 +67,7 @@ public class BJ_G5_1107_리모컨 {
             System.out.println("0");
             return;
         }
-        if (canRemote(numN)) System.out.println(NArray.length);
+        if (canRemote(numN)) System.out.println(Math.min(NArray.length, min));
         else {
             bfs();
             int totalClickCnt = answer + Integer.toString(answerNum).length();
