@@ -19,53 +19,92 @@ package bj.g5;
 입력
 8 9 10
 
-나올 수 있는 barrelState
-0 9 1
-8 0 2
-0 2 8
-1 0 9
-0 0 10
+ 움직일 수 있는 경우의 수
+ A->B
+ A->C
+ B->A
+ B->C
+ C->A
+ C->B
+
+ 이렇게 움직이면서 A가 비었을 경우 체크
+ 이미 체크한거는 어떻게 판별할까, 방문 배열인건 아는데
+ 그냥 단순히 3차원 배열로 확인하고, 물통의 부피 최대 크기는 200이니까 201*201*201 = 8,120,601 크기의 3차원 boolean 배열로 해결
+ 아니면 셋 중에 가장 큰 크기의 물통을 기준으로 방문 배열을 만들어 주면 어느정도 최적화가 될 듯.
+
+ 물감통은 길이 세개짜리 int형 배열로 해도 되나 편의상 클래스를 만들기로 했음
+
+
+
 */
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Queue;
-import java.util.StringTokenizer;
+import java.util.*;
 
 public class BJ_G5_2251_물통 {
     static StringTokenizer tokens;
     static BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
     static StringBuilder builder = new StringBuilder();
 
-    static ArrayList<Integer> answer = new ArrayList<>();
+    static TreeSet<Integer> answer = new TreeSet<>();
     static int A,B,C;
     static int[] barrelState;
     static int[] barrelMax;
+    static boolean[][][] visited;
 
     public static void main(String[] args) throws IOException{
         tokens = new StringTokenizer(input.readLine());
         barrelState = new int[3];
         barrelMax = new int[3];
+        int maxBarrel = 0;
 
         for(int i=0; i<3; i++) {
             int num = Integer.parseInt(tokens.nextToken());
             barrelMax[i] = num;
             barrelState[i] = 0;
+            maxBarrel = Math.max(maxBarrel, num);
         }
+        visited = new boolean[maxBarrel+1][maxBarrel+1][maxBarrel+1];
 
         // A,B 물통은 비어있다.
         // C 물통은 꽉차있다.
-        barrelState[2] = C;
+        barrelState[2] = barrelMax[2];
+        bfs(barrelState);
+        for(int num: answer) {
+            builder.append(num).append(" ");
+        }
+        System.out.println(builder);
 
     }
+    private static void bfs(int[] barrelState) {
+        Queue<int[]> q = new ArrayDeque<>();
+        q.offer(barrelState);
 
-    private static void bfs() {
-        boolean[] visited = new boolean[C+1];
-        Queue<Integer> q = new ArrayDeque<>();
+        while(!q.isEmpty()) {
+            int[] now = q.poll();
+            if(visited[now[0]][now[1]][now[2]]) continue;
+            visited[now[0]][now[1]][now[2]] = true;
+            for(int i=0; i<3; i++) {
+                for(int j=0; j<3; j++) {
+                    if(i == j) continue;
+                    int[] next = {now[0], now[1], now[2]};
+                    if(next[i] + next[j] > barrelMax[j]) {
+                        int temp = next[j];
+                        next[j] = barrelMax[j];
+                        next[i] = (next[i] + temp)- barrelMax[j];
+                    }
+                    else {
+                        next[j] = next[j] + next[i];
+                        next[i] = 0;
+                    }
+                    if(next[0] == 0) {
+                        answer.add(next[2]);
+                    }
+                    q.offer(new int[] {next[0], next[1], next[2]});
+                }
+            }
+        }
     }
-
-    
 }
