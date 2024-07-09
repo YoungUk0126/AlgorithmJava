@@ -52,6 +52,11 @@ import java.util.*;
  * 먹는 물고기의 크기랑은 상관 없음.
  * 우선순위 : 가장 가까운 물고기 > 가장 위에 있는 물고기 > 가장 왼쪽에 있는 물고기
  * 먹고 난 다음에 먹을게 있는지 어떻게 알려줘야 할까? 미리 알아야 더 헤메기 전에 엄마 부를꺼 아니야
+ * bfs를 계속 돌아 -> 먹은 놈 저장할 객체 선언해놔( 이동시간은 특정 값으로 ) -> 이동하는 곳은 Queue에 담아 -> 먹은 곳은 bfs안에서 따로 저장해놔 -> 또 다른 곳을 먹게 된다면
+ * 전에 먹었던 놈이랑 비교를해( 가장 가까운 > 가장 위에 > 가장 왼쪽에 ) -> 제일 적합한 놈 리턴
+ * 리턴이 됐으면 리턴 된 놈의 이동시간이 특정 값이라면 더 이상 먹을 곳을 못찾은거고,
+ * 제대로 값이 리턴 됐으면 그 놈이 최적의 물고기를 먹고 난 상어의 위치, 상태인거임
+ * 계속 특정값을 리턴할 때 까지 bfs를 돌리고, 특정값이 나온다면 전에 저장되어 있던 상어의 이동시간이 최소 값이다
  * @see https://www.acmicpc.net/problem/16236
  * @since 2024. 07.02
  */
@@ -63,9 +68,8 @@ public class BJ_G3_16236_아기상어 {
 
     static int N, ans;
     static int[][] map;
-    static boolean[][] visited;
     static int[][] deltas = {{-1, 0}, {0, -1}, {1, 0}, {0, 1}};
-    static int[] fishes = new int[7];
+    static BabyShark answerShark;
 
     public static void main(String[] args) throws IOException {
         N = Integer.parseInt(input.readLine());
@@ -83,57 +87,64 @@ public class BJ_G3_16236_아기상어 {
                     startX = i;
                     startY = j;
                     map[i][j] = 0;
-                } else if (map[i][j] != 0) {
-                    nothingToEat = true;
-                    fishes[map[i][j]]++;
-                }
+                } else if (map[i][j] != 0) nothingToEat = true;
             }
         }
 
         if (!nothingToEat) {
             System.out.println(0);
         } else {
-            letsEat(startX, startY);
-            System.out.println(ans);
+            answerShark = new BabyShark(2, 0, startX, startY, 0);
+            while (true) {
+                BabyShark fullShark = letsEat(answerShark.weight, answerShark.fishCnt, answerShark.x, answerShark.y, answerShark.sec);
+                if (fullShark.sec != Integer.MAX_VALUE) {
+                    answerShark = fullShark;
+                    map[fullShark.x][fullShark.y] = 0;
+                }
+                else break;
+            }
+            System.out.println(answerShark.sec);
         }
     }
 
-    private static void letsEat(int startX, int startY) {
-        visited = new boolean[N][N];
+    private static BabyShark letsEat(int weight, int fishCnt, int startX, int startY, int sec) {
+        boolean[][] visited = new boolean[N][N];
         Queue<BabyShark> q = new ArrayDeque<>();
-        q.offer(new BabyShark(2, 0, startX, startY, 0, fishes));
+        q.offer(new BabyShark(weight, fishCnt, startX, startY, sec));
+        visited[startX][startY] = true;
+        BabyShark returnShark = new BabyShark(Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE);
 
         while (!q.isEmpty()) {
             BabyShark now = q.poll();
-            System.out.println("x : " + now.x + ", y : " + now.y + ", weight : " + now.weight + ", fishCnt : " + now.fishCnt);
-            visited[now.x][now.y] = true;
+
+            if(now.sec >= returnShark.sec) break;
 
             for (int i = 0; i < 4; i++) {
                 int dx = now.x + deltas[i][0];
                 int dy = now.y + deltas[i][1];
+                BabyShark next = new BabyShark(now.weight, now.fishCnt, dx, dy, now.sec);
                 if (isIn(dx, dy) && !visited[dx][dy]) {
-                    int eatFlag = now.move(dx, dy);
-                    if(eatFlag >= 0){
-                        q.offer(new BabyShark(now.weight, now.fishCnt, now.x, now.y, now.sec, now.myGoalFishes));
-                        if(eatFlag > 0){
-                            visited = new boolean[N][N];
-                            boolean flag = false;
-                            for (int j = 1; j < 7; j++) {
-                                if (j < now.weight && now.myGoalFishes[j] > 0) {
-                                    System.out.println("아직 먹을꺼 있어");
-                                    flag = true;
-                                    break;
+                    int eatFlag = next.move(dx, dy);
+                    if (eatFlag > 0) { // 먹었어
+                        if (returnShark.sec > next.sec) {
+                            returnShark = next;
+                        } else if (returnShark.sec == next.sec) {
+                            if (returnShark.x > next.x) {
+                                returnShark = next;
+                            } else if (returnShark.x == next.x) {
+                                if (returnShark.y > next.y) {
+                                    returnShark = next;
                                 }
                             }
-                            if (!flag) {
-                                System.out.println("정답 찾음!");
-                                ans = now.sec;
-                            }
                         }
+                    } else if (eatFlag == 0) { // 이동만 했어
+                        q.offer(new BabyShark(next.weight, next.fishCnt, next.x, next.y, next.sec));
+                        visited[next.x][next.y] = true;
                     }
                 }
             }
         }
+        return returnShark;
     }
 
     static private boolean isIn(int dx, int dy) {
@@ -146,23 +157,28 @@ public class BJ_G3_16236_아기상어 {
         int x;
         int y;
         int sec;
-        int[] myGoalFishes;
 
-        public BabyShark(int weight, int fishCnt, int x, int y, int sec, int[] myGoalFishes) {
+        @Override
+        public String toString() {
+            return "BabyShark{" +
+                           "weight=" + weight +
+                           ", fishCnt=" + fishCnt +
+                           ", x=" + x +
+                           ", y=" + y +
+                           ", sec=" + sec +
+                           '}';
+        }
+
+        public BabyShark(int weight, int fishCnt, int x, int y, int sec) {
             this.weight = weight;
             this.fishCnt = fishCnt;
             this.x = x;
             this.y = y;
             this.sec = sec;
-            this.myGoalFishes = myGoalFishes.clone();
         }
 
         public void eat() {
             fishCnt++;
-            myGoalFishes[map[x][y]]--;
-            System.out.println("제가 이거 먹음");
-            System.out.println(map[x][y] + " : " + myGoalFishes[map[x][y]]);
-            map[x][y] = 0;
             if (fishCnt == weight) {
                 this.weight++;
                 this.fishCnt = 0;
@@ -171,14 +187,11 @@ public class BJ_G3_16236_아기상어 {
 
         public int move(int dx, int dy) {
             if (map[dx][dy] <= this.weight) { // 지나갈 수 있냐?
-                this.x = dx;
-                this.y = dy;
-                if (map[dx][dy] != 0 && map[dx][dy] < this.weight) {// 먹을 수 있냐?
+                this.sec++;
+                if (map[dx][dy] > 0 && map[dx][dy] < this.weight) {// 먹을 수 있냐?
                     eat();
-                    this.sec++;
                     return 1;
                 }
-                this.sec++;
                 return 0;
             }
             return -1;
