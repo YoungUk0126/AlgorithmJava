@@ -6,7 +6,7 @@ import java.util.*;
 /**
  * @author 김영욱
  * @git
- * @performance
+ * @performance 88MS
  * @category #
  * @note N×N 크기의 공간에 물고기 M마리와 아기 상어 1마리가 있다. 공간은 1×1 크기의 정사각형 칸으로 나누어져 있다.
  * 한 칸에는 물고기가 최대 1마리 존재한다. 아기 상어와 물고기는 모두 크기를 가지고 있고, 이 크기는 자연수이다.
