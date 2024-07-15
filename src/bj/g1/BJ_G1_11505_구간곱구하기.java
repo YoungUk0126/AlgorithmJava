@@ -34,6 +34,8 @@ import java.util.*;
  * 반례가 있네
  * <p>
  * 그냥 단순히 밑에서 부터 숫자 바꾸고 다시 갱신해야할듯
+ * https://www.youtube.com/watch?v=NoeQkthS57s&ab_channel=%EA%B7%B1%EA%B7%B1
+ * 세그먼트 트리 설명 잘되어 있는 영상
  * @see https://www.acmicpc.net/problem/11505
  * @since 2024. 07. 15
  */
