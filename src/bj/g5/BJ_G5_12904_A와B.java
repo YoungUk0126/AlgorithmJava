@@ -26,38 +26,38 @@ import java.util.StringTokenizer;
  * @since 2024.06.19
  */
 public class BJ_G5_12904_A와B {
-  static BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
-  static String S, T;
+    static BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
+    static String S, T;
 
-  public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException {
 
-    S = input.readLine();
-    T = input.readLine();
+        S = input.readLine();
+        T = input.readLine();
 
-    while (S.length() != T.length()) {
-      if (T.charAt(T.length() - 1) == 'A') {
-        T = subA(T);
-      } else {
-        T = flipSAndSubB(T);
-      }
+        while (S.length() != T.length()) {
+            if (T.charAt(T.length() - 1) == 'A') {
+                T = subA(T);
+            } else {
+                T = flipSAndSubB(T);
+            }
+        }
+
+        if (S.equals(T)) {
+            System.out.println(1);
+        } else {
+            System.out.println(0);
+        }
     }
 
-    if (S.equals(T)) {
-      System.out.println(1);
-    } else {
-      System.out.println(0);
+    private static String flipSAndSubB(String s) {
+        StringBuilder temp = new StringBuilder();
+        for (int i = s.length() - 2; i >= 0; i--) {
+            temp.append(s.charAt(i));
+        }
+        return temp.toString();
     }
-  }
 
-  private static String flipSAndSubB(String s) {
-    StringBuilder temp = new StringBuilder();
-    for (int i = s.length() - 2; i >= 0; i--) {
-      temp.append(s.charAt(i));
+    private static String subA(String s) {
+        return s.substring(0, s.length() - 1);
     }
-    return temp.toString();
-  }
-
-  private static String subA(String s) {
-    return s.substring(0, s.length() - 1);
-  }
 }
