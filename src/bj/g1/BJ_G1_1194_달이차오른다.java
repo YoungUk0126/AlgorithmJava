@@ -74,7 +74,7 @@ public class BJ_G1_1194_달이차오른다 {
 
 	}
 	
-	public static int bfs() {
+	private static int bfs() {
 		boolean [][][] visit = new boolean[64][N][M];
 		q.offer(start);
 		visit[0][start.x][start.y] = true;
@@ -123,7 +123,7 @@ public class BJ_G1_1194_달이차오른다 {
 		return -1;
 	}
 	
-	public static boolean isIn(int row, int col) {
+	private static boolean isIn(int row, int col) {
         return (row >= 0 && row < N) && (col >= 0 && col < M);
     }
 }
