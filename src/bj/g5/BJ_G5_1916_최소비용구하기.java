@@ -1,3 +1,5 @@
+package bj.g5;
+
 import java.util.*;
 import java.io.*;
 
@@ -14,6 +16,7 @@ public class BJ_G5_1916_최소비용구하기 {
 
         N = Integer.parseInt(input.readLine());
         M = Integer.parseInt(input.readLine());
+
 
         for (int i = 0; i <= N; i++) {
             graph.add(new ArrayList<>());
