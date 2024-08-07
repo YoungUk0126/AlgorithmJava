@@ -136,14 +136,14 @@ public class BJ_G3_7579_앱 {
 			}
 		}
 		System.out.println(ans);
-		for(int[] row: dp) {
-			System.out.println();
-			for(int col: row) {
-				System.out.print(col + " ");
+		for(int i=1; i<=N; i++) {
+			for(int j=1; j<=sum; j++) {
+				System.out.print(dp[i][j] + " ");
 			}
+			System.out.println();
 		}
 	}
-	static class App{
+	private static class App{
 		int memory;
 		int cost;
 		public App() { }
