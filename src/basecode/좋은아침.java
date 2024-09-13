@@ -9,8 +9,8 @@ public class 좋은아침 {
 		// 4P3을 구하는 코드를 작성해보자.
 //		makePermutation(0, new char[3], new boolean[src.length]);
 //		makeCombination(0, 0, new char[3]);
-//		makeSubSet1(0, new boolean[4]);
-		makeSubSet2();
+		makeSubSet1(0, new boolean[4]);
+//		makeSubSet2();
 	}
 	
 	// 순열
