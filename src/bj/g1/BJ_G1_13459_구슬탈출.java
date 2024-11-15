@@ -6,7 +6,7 @@ import java.io.*;
 /**
  * @author 김영욱
  * @git
- * @performance 68ms
+ * @performance 64ms
  * @category #
  * @note 시간 : 2초
  * 문제
