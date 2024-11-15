@@ -6,7 +6,7 @@ import java.io.*;
 /**
  * @author 김영욱
  * @git
- * @performance
+ * @performance 68ms
  * @category #
  * @note 시간 : 2초
  * 문제
@@ -42,9 +42,10 @@ import java.io.*;
  * <p>
  * BFS처럼 4방향 모두 움직이는 방식으로 진행하되, 큐에 현재 시도 회수, 빨간 공 위치, 파랑 공 위치를 넣어야 함
  * 1. #을 만나면 멈춘다
- * 2. 빨간 공이 움직일 경로에 파란 공이 있다면 파란 공을 먼저 움직이고 빨간 공을 움직일 것
- * 3. 그게 아니라면 빨간 공을 움직인 후 파란 공을 움직일 것
- * 4. 빨간 공이 구멍에 들어가더라도 파란 공이 같이 들어가는지 꼭 확인 후 움직일 것
+ * 2. 빨간 공을 움직인 후 파란공을 움직인 다음 빨간 공이 계속 움직일 수 있다면 움직일 것
+ * 3. 움직일 때 벽, 다른 공에 도달하면 그 전에 멈추고, GOAL에 도달한다면 GOAL 위치에 멈추도록
+ * 4. 4차원 방문 배열을 활용해 두 빨간 공과 파란 공의 좌표에 동시에 도달한 적이 있다면 다시 볼 필요 X
+ * - 첫 시도 때 이거 안해줘서 풀긴 했는데 440ms나왔음
  * @see https://www.acmicpc.net/problem/13459
  * @since 2024. 11. 14
  */
@@ -55,14 +56,12 @@ public class BJ_G1_13459_구슬탈출 {
 
     static int N, M;
     static char[][] map;
+    static boolean[][][][] visited;
     static int deltas[][] = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
     static int goalX, goalY;
 
 
     public static void main(String[] args) throws IOException {
-        // Todo: 구슬탈출 풀긴 했는데 수정할게 있다
-        // 1. 처음 생각한 빨간공 마지막 위치에 따라 방문배열 만들어서 처리하기( 없으니까 시간이 너무 오래걸림 )
-        // 2. 공 움직이는 함수 그냥 빨간 공 파란 공 동시에 움직이게 하면 될듯
         tokens = new StringTokenizer(input.readLine());
         N = Integer.parseInt(tokens.nextToken());
         M = Integer.parseInt(tokens.nextToken());
@@ -71,6 +70,7 @@ public class BJ_G1_13459_구슬탈출 {
 
         int[] redCord = new int[2];
         int[] blueCord = new int[2];
+        visited = new boolean[N][M][N][M];
 
         for (int i = 0; i < N; i++) {
             String str = input.readLine();
@@ -94,17 +94,9 @@ public class BJ_G1_13459_구슬탈출 {
     }
 
     private static int bfs(int[] redCord, int[] blueCord) {
-        /**BFS처럼 4방향 모두 움직이는 방식으로 진행하되, 큐에 현재 시도 회수, 빨간 공 위치, 파랑 공 위치를 넣어야 함
-         1. #을 만나면 멈춘다
-         2. 우선 공들을 다 방향대로 옮긴다.
-         3. 공들의 좌표를 옮긴 후, 공들이 진행 방향으로 더 움직일 수 있다면 움직인다.
-         4. 빨간 공이 구멍에 들어가더라도 파란 공이 같이 들어가는지 꼭 확인 후 움직일 것
-         5. visited는 빨간 공이 마지막으로 방문했던 것으로 기록할 것(지나가는 경로는 방해받지 않도록), 빨간 공 위주로 굴릴꺼고 파란 공은 따라오는 것
-         **/
         Queue<int[]> q = new ArrayDeque<>();
-//        boolean[][] visited = new boolean[N][M];
         q.offer(new int[]{1, redCord[0], redCord[1], blueCord[0], blueCord[1]});// 시도 횟수, 빨간 공, 파란 공
-//        visited[redCord[0]][redCord[1]] = true;
+        visited[redCord[0]][redCord[1]][blueCord[0]][blueCord[1]] = true;
 
         while (!q.isEmpty()) {
             int[] now = q.poll();
@@ -122,8 +114,9 @@ public class BJ_G1_13459_구슬탈출 {
                 nr = findCord(nr[0], nr[1], nb[0], nb[1], d);// 파란공 때문에 막혀서 빨간 공이 못갔었으면 이제 갈 수 있음
 
                 if ((nr[0] == goalX && nr[1] == goalY) && (nb[0] != goalX || nb[1] != goalY)) return 1;
+                else if (visited[nr[0]][nr[1]][nb[0]][nb[1]]) continue;
                 else {
-//                    visited[nr[0]][nr[1]] = true;
+                    visited[nr[0]][nr[1]][nb[0]][nb[1]] = true;
                     q.offer(new int[]{turn + 1, nr[0], nr[1], nb[0], nb[1]});
                 }
             }
