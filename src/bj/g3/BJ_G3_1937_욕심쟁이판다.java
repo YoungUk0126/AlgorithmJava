@@ -5,8 +5,8 @@ import java.util.*;
 /**
  * @author 김영욱
  * @git
- * @performance
- * @category #
+ * @performance 396ms
+ * @category # dfs + dp
  * @note 시간 : 2초
  * 판다는 욕심쟁이라 지금 먹은 곳보다 대나무가 더 많은 곳으로 움직인다.
  * 이 문제는 dp로 현 위치에서 할 일만 잘 정해주면 풀 수 있다.
