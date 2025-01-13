@@ -3,6 +3,7 @@ package bj.g3;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.reflect.Array;
 import java.util.*;
 
 public class BJ_G3_2457_공주님의정원 {
@@ -11,11 +12,11 @@ public class BJ_G3_2457_공주님의정원 {
     static StringTokenizer tokens;
 
     static int N;
-    static ArrayList<Flower> flowers;
+    static Flower[] flowers;
 
     public static void main(String[] args) throws IOException {
         N = Integer.parseInt(input.readLine());
-        flowers = new ArrayList<>();
+        flowers = new Flower[N];
         Stack<Flower> answerList = new Stack<>();
         for(int i=0; i<N; i++) {
             tokens = new StringTokenizer(input.readLine());
@@ -27,9 +28,9 @@ public class BJ_G3_2457_공주님의정원 {
             int start = startMonth * 100 + startDay;
             int end = endMonth * 100 + endDay;
 
-            flowers.add(new Flower(start, end));
+            flowers[i] = new Flower(start, end);
         }
-        Collections.sort(flowers);
+        Arrays.sort(flowers);
 
         int start = 301;
         int end = 1201;
@@ -40,14 +41,15 @@ public class BJ_G3_2457_공주님의정원 {
         while(start < end) {
             boolean isFind = false;
 
-            for(int i=nextSearchIndex; i<flowers.size(); i++) {
-                Flower now = flowers.get(i);
+            for(int i=nextSearchIndex; i<flowers.length; i++) {
+                Flower now = flowers[i];
                 if(now.start > start) break;
 
                 if(choosen < now.end) {
                     choosen = now.end;
                     choosenStart = now.start;
                     isFind = true;
+                    nextSearchIndex = i + 1;
                 }
             }
             if(isFind) {
@@ -90,11 +92,13 @@ public class BJ_G3_2457_공주님의정원 {
         // 종료일이 높은 순
         @Override
         public int compareTo(Flower f) {
-            if(this.start == f.start) {
-                return f.end - this.start;
-            } else {
-                return this.start - f.start;
+            if(this.start < f.start) return -1;
+            else if(this.start == f.start) {
+                if(this.end > f.end) return -1;
+                else if(this.end == f.end) return 0;
+                return 1;
             }
+            else return 1;
         }
     }
 }
