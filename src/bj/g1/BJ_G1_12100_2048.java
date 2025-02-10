@@ -167,7 +167,7 @@ public class BJ_G1_12100_2048 {
 
 
 
-    static class block {
+    private static class block {
         int num;
         boolean isMerged;
 
