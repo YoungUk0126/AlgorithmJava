@@ -31,10 +31,9 @@ import java.util.StringTokenizer;
  * 오른쪽, 아래, 왼쪽 밖에 못가고, 한 번 간 곳은 못가니까 3차원 dp를 사용하여 오 아 왼 방향대로 갔을 때 값을 기억하여
  * 가장 많이 먹을 수 있는 길을 찾아야 한다
  *
- * 3차원 dp, 3차원 방문 배열
- * priority queue를 사용하여 더 값을 크게 불릴 수 있는 순서로 뽑아
- *
  * N,M에 도착했을 때 dp에서 세 방향 중 가장 큰 값을 출력
+ *
+ * https://lotuslee.tistory.com/45
  * @see https://www.acmicpc.net/problem/2169
  * @since 2025. 04. 03
  */
@@ -46,8 +45,10 @@ public class BJ_G2_2169_로봇조종하기 {
 
     static int N, M;
     static int[][] map;
-    static int[][][] dp; // 오른쪽, 아래, 왼쪽
+    static int[][] dp; // 오른쪽, 아래, 왼쪽
+    static boolean[][] visited;
     static int[][] deltas = {{0,1}, {1,0}, {0,-1}};
+    static final int INF = -987654321;
 
 
     public static void main(String[] args) throws IOException {
@@ -55,47 +56,42 @@ public class BJ_G2_2169_로봇조종하기 {
         N = Integer.parseInt(tokens.nextToken());
         M = Integer.parseInt(tokens.nextToken());
 
-        map = new int[N+1][M+1];
-        dp = new int[3][N+1][M+1];
+        map = new int[N][M];
+        dp = new int[N][M];
+        visited = new boolean[N][M];
 
-        for (int i = 1; i <= N; i++) {
+        for (int i = 0; i < N; i++) {
             tokens = new StringTokenizer(input.readLine());
-            for (int j = 1; j <= M; j++) {
+            for (int j = 0; j < M; j++) {
                 map[i][j] = Integer.parseInt(tokens.nextToken());
             }
         }
-    }
-
-    static private int bfs() {
-        boolean[][][] visited = new boolean[3][N+1][M+1];
-        PriorityQueue<int []> pq = new PriorityQueue<>();
-
-        for(int i=0; i<3; i++) {
-            dp[i][1][1] = map[1][1];
-            visited[i][1][1] = true;
+//        왼쪽에서 오는거 더하고, 오른쪽에서 오는거 더하고, 둘 중에 큰거를 dp에 넣는다
+//        2행부터는 위랑 왼쪽에서 오는거 비교해서 더하고, 오른쪽도 마찬가지, 둘 중에 큰거 dp에 넣는다
+        dp[0][0] = map[0][0];
+//      0,0부터 시작이라 왼쪽부터 오는 게 제일 큰 값
+        for(int j=1; j<M; j++) {
+            dp[0][j] = map[0][j] + dp[0][j-1];
         }
-        pq.offer(new int[] {1,1});
 
-        while(!pq.isEmpty()) {
-            int[] now = pq.poll();
-            int x = now[0];
-            int y = now[1];
+        for(int i=1; i<N; i++) {
+            int[] leftToRight = new int[M];
+            int[] rightToLeft = new int[M];
 
-            for(int d=0; d<3; d++) {
-                int nx = x + deltas[d][0];
-                int ny = y + deltas[d][1];
+            leftToRight[0] = dp[i-1][0] + map[i][0];
+            for(int j=1; j<M; j++) {
+                leftToRight[j] = Math.max(dp[i-1][j], leftToRight[j-1]) + map[i][j];
+            }
 
-                if(isIn(nx, ny) && !visited[d][nx][ny]) {
+            rightToLeft[M-1] = dp[i-1][M-1] + map[i][M-1];
+            for(int j=M-2; j>=0; j--) {
+                rightToLeft[j] = Math.max(dp[i-1][j], rightToLeft[j+1]) + map[i][j];
+            }
 
-                }
+            for(int j=0; j<M; j++) {
+                dp[i][j] = Math.max(leftToRight[j], rightToLeft[j]);
             }
         }
-        return 0;
-    }
-
-
-
-    static private boolean isIn(int nx, int ny) {
-        return 1 <= nx && nx <= N && 1 <= ny && ny <= M;
+        System.out.println(dp[N-1][M-1]);
     }
 }

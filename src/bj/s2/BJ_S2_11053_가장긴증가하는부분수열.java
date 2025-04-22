@@ -31,6 +31,9 @@ public class BJ_S2_11053_가장긴증가하는부분수열 {
 			binarySearch(lines[i]);
 		}
 		System.out.println(dp.size());
+		for(int num: dp) {
+			System.out.print(num + " ");
+		}
 	}
 
 	private static void binarySearch(int line) {
