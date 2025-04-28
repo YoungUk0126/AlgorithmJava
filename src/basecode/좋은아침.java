@@ -14,7 +14,7 @@ public class 좋은아침 {
 //		makeSubSet2();
 	}
 	
-	// 순열
+	// 순열 중복없이 순서에 상관 있게 3P2 = (3! / (3! - 2!))
 	static void makePermutation(final int nthChoice, char [] choosed, boolean [] visited) {
 		// 기저 조건 (2)
 		if(nthChoice == choosed.length) {
@@ -33,7 +33,7 @@ public class 좋은아침 {
 			}
 		}
 	}
-	// 조합
+	// 조합 중복 없이 순서에 상관 없게 3C2 = (3! / 2! * (3! - 2!) )
 	static void makeCombination(final int nthChoice, final int startIdx, char [] choosed ) {
 		// 기저 조건
 		if(nthChoice == choosed.length) {
