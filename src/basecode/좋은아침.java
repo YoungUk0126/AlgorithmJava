@@ -8,10 +8,10 @@ public class 좋은아침 {
 	public static void main(String[] args) {
 		// 4P3을 구하는 코드를 작성해보자.
 //		makePermutation(0, new char[3], new boolean[src.length]);
-		makeCombination(0, 0, new char[3]);
+//		makeCombination(0, 0, new char[3]);
 //		makeDupCombination(0, 0, new char[3]);
 //		makeSubSet1(0, new boolean[4]);
-//		makeSubSet2();
+		makeSubSet2();
 	}
 	
 	// 순열 중복없이 순서에 상관 있게 3P2 = (3! / (3! - 2!))
