@@ -12,8 +12,7 @@ import java.util.StringTokenizer;
  * @git
  * @performance
  * @category #
- * @note
- * 우현이가 우주선을 탈꺼고, 그 우주선에는 공간이동 장치가 있다.
+ * @note 우현이가 우주선을 탈꺼고, 그 우주선에는 공간이동 장치가 있다.
  * 하지만 이 공간이동 장치는 이동 거리를 급격하게 늘릴 경우 기계에 심각한
  * 결함이 발생하는 단점이 있어서, 이전 작동시기에 k광년을 이동하였을 떄는,
  * k-1, k 혹은 k+1 광년 만을 다시 이동할 수 있다.
@@ -23,17 +22,17 @@ import java.util.StringTokenizer;
  * (여기서 다시 2광년을 이동한다면 다음 시기엔 1, 2, 3 광년을 이동할 수 있다.)
  * x에서 y지점을 향해 최소한의 작동 횟수로 이동하려 한다.
  * 하지만 y지점에 도착하기 바로 직전의 이동거리는 반드시 1광년
- *
+ * <p>
  * 1. K광년 이동 후에는 K-1, K, K+1로만 이동 가능
  * 2. 최소한의 작동 횟수로 이동하려 한다.
  * 3. y지점에 도착하기 바로 직전의 이동거리는 반드시 1광년
- *
+ * <p>
  * 입력의 첫 줄에는 테스트케이스의 개수 T가 주어진다. 각각의 테스트 케이스에 대해 현재 위치 x 와 목표 위치 y 가 정수로 주어지며,
  * x는 항상 y보다 작은 값을 갖는다. (0 ≤ x < y < 2^31)
  * 0 3 => 1, 1, 1 => 3
  * 1 5 => 2(1), 4(2), 5(1) => 3
  * 45 50 => 46(1), 48(2), 49(1), 50(1) => 4
- *
+ * <p>
  * K값은 1씩 늘어나니까 도착할때 이동거리가 1이려면 Y-X거리의 절반까지 도착했을때까지만 이동 거리가 늘어나야하고,
  * 그 후로는 계속 줄어야 감당 가능함
  * 0 15
@@ -41,17 +40,17 @@ import java.util.StringTokenizer;
  * 7전까지 늘어나야함. 다만, 그때의 K를 어느기간동안 해야하는건지를 구해야됨
  * 1, 3, 6, 9, 12, 14, 15
  * 1, 2, 3, 3, 3, 2, 1
- *
+ * <p>
  * 0 30
- *
+ * <p>
  * 15까지 잘 늘어났으면 그 절반도 바로 끝
  * 1, 3, 6, 10, 15, 20, 24, 27, 29, 30
  * 1, 2, 3, 4,  5,  5,  4,  3,  2,  1 => 10
- *
+ * <p>
  * 0 40
  * 1, 3, 6, 10, 15, 20, 25, 30, 34, 37, 39, 40 // 15에서 6으로 늘어나면 21로 절반 이상이 되버림
  * 1, 2, 3,  4, 5,  5,  5,  5,  4,  3,  2,  1 => 12
- *
+ * <p>
  * 1, 3, 6, 10, 15, 21, 26, 30, 34, 37, 39, 40
  * 1, 2, 3, 4,  5,  6,  5,  4,  4,  3,   2,  1
  * 40 - 0 = 40
@@ -70,24 +69,24 @@ import java.util.StringTokenizer;
  * 4+3+2+1 = 10 되네? 진행시켜
  * 40 - 34 = 6
  * 4+3+2+1 = 10 안되네? 줄여
- *
- *
+ * <p>
+ * <p>
  * 내 생각에 Z(늘어날때까지의 길이)를 구해뒀다가 최대값에서 Z를 뺀 값까지는 제자리 걸음을 해야할듯
- *
+ * <p>
  * 0 19
  * 1, 3, 6, 9, 12, 15, 17, 18, 19
  * 1, 2, 3, 3, 3, 3, 2, 1, 1 => 9
  * 1, 3, 6, 10, 13, 16, 18, 19
  * 1, 2, 3, 4,  3, 3, 2, 1 => 8
- *
+ * <p>
  * 0 21
  * 1, 3, 6, 10, 14, 17, 19, 20, 21
  * 1, 2, 3, 4, 4, 3, 2, 1, 1 => 9
- *
+ * <p>
  * 0, 5
  * 1, 3, 4, 5
  * 1, 2, 1, 1
- *
+ * <p>
  * 5 - 0 = 0
  * 0 = 0 되네? 늘려
  * 5 - 1 = 4
@@ -96,19 +95,18 @@ import java.util.StringTokenizer;
  * 2+1 = 3 안되네? 줄여
  * 5 - 4 = 1
  * 1 = 1 딱맞네 진행시켜
- *
+ * <p>
  * 0, 3
  * 1, 2, 3
  * 1, 1, 1
- *
+ * <p>
  * 3-0 = 0
  * 0=0 되네?늘려
- *
+ * <p>
  * 3-1 = 2
  * 1= 1 되네? 늘려....지만 늘리면 안돼
  * 어떢하지 아
  * 아 아아 아 아 아 아 ㅇ ㅏㅇ ㅏ아 아 ㅇ ㅏ아 아
- *
  * @see
  * @since 2025. 08. 07
  */
@@ -118,18 +116,18 @@ public class BJ_G5_1011_FlyMeToTheAlphaCentauri {
     static BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
     static StringBuilder builder = new StringBuilder();
 
-    static int X,Y;
+    static int X, Y;
     static int T;
 
 
     public static void main(String[] args) throws IOException {
         T = Integer.parseInt(input.readLine());
-        for(int t=0; t<T; t++) {
+        for (int t = 0; t < T; t++) {
             tokens = new StringTokenizer(input.readLine());
             X = Integer.parseInt(tokens.nextToken());
             Y = Integer.parseInt(tokens.nextToken());
 
-            int ans = solution(0, Y-X);
+            int ans = solution(Y - X);
             builder.append(ans).append("\n");
 
         }
@@ -137,22 +135,27 @@ public class BJ_G5_1011_FlyMeToTheAlphaCentauri {
 
     }
 
-    private static int solution(int x, int y) {
-
-        int start = x;
-        int end = y;
+    private static int solution(int end) {
+        int start = 0;
         int seqSum = 0;
         int k = 0;
+        int leftDist = 0;
+        int max_dist = (int) Math.sqrt(end);// K의 최대값이 제곱근을 넘어서는 안됨
+        // 넘어서는 순간 하나씩 줄여서 돌아올 수가 없다
         Stack<Integer> curSeq = new Stack<>();
 
-        while(start < end) {
-            if(end-start > seqSum) {
+        while (start < end) {
+            leftDist = end - start;
+            if (leftDist > seqSum) {
                 // 늘려
-                k++;
-                seqSum += k;// 1, 3, 6, 10, 15, 21
-            } else if(end-start < seqSum) {
-                seqSum-=k;// (21-6), (15-5), (10-4), (6-3)
-                k--;// 5, 4, 3, 2
+                if(k < max_dist){
+                    k++;
+                    seqSum += k;// 1, 3, 6, 10, 15, 21
+                }
+            } else if (leftDist < seqSum) {
+                seqSum -= k;// (21-6), (15-5), (10-4), (6-3)
+                if(k > 1)
+                    k--;// 5, 4, 3, 2
             }
             start += k;//1,3,6,10,15,21,26,30,34,37,39,40
             curSeq.push(k);// 1,2,3,4,5,6,5,4,4,3,2,1
@@ -162,3 +165,5 @@ public class BJ_G5_1011_FlyMeToTheAlphaCentauri {
     }
 
 }
+// 1, 3, 6, 10, 14, 18, 21, 23, 24 => 9
+// 14가 남은 10보다는 크지만 그래도 줄이면 안돼
