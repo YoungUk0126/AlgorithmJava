@@ -3,6 +3,8 @@ package codetree;
 import java.util.*;
 import java.io.*;
 
+import static java.lang.System.exit;
+
 /**
  * @author 김영욱
  * @git
@@ -89,28 +91,157 @@ public class CD_메두사와전사들 {
     static StringBuilder builder = new StringBuilder();
 
     static int N, M;
+    static int parkX, parkY, houseX, houseY;
+    static Warrior[] warriors;
+    static int warriorTotalDist, stonedWarrior, attackedWarrior;
     // 시계방향
     static int[][] deltas = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
     static int[][] deltasVistion = {{-1, 0}, {-1, 1}, {0, 1}, {1, 1}, {1, 0}, {1, -1}, {0, -1}, {-1, -1}};// 대각선 포함 8방향
     static int[][] map;
 
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException{
+        tokens = new StringTokenizer(input.readLine());
+        N = Integer.parseInt(tokens.nextToken());
+        M = Integer.parseInt(tokens.nextToken());
 
+        map = new int[N][N];
+        warriors = new Warrior[M];
+
+
+        tokens = new StringTokenizer(input.readLine());
+        houseX = Integer.parseInt(tokens.nextToken());
+        houseY = Integer.parseInt(tokens.nextToken());
+        parkX = Integer.parseInt(tokens.nextToken());
+        parkY = Integer.parseInt(tokens.nextToken());
+
+        tokens = new StringTokenizer(input.readLine());
+        for(int i=0; i<M; i++) {
+            int wx = Integer.parseInt(tokens.nextToken());
+            int wy = Integer.parseInt(tokens.nextToken());
+            warriors[i] = new Warrior(wx, wy, new boolean[N][N]);
+        }
+
+        for(int i=0; i<N; i++) {
+            tokens = new StringTokenizer(input.readLine());
+            for(int j=0; j<N; j++) {
+                map[i][j] = Integer.parseInt(tokens.nextToken());
+            }
+        }
+
+        Stack<int []> shortestPathStack = findShortestPath(houseX, houseY);
+        if(!shortestPathStack.isEmpty()) {
+            game(shortestPathStack);
+        }
+
+
+    }
+
+    private static Stack<int []> findShortestPath(int x, int y) {
+        // 메두사가 공원까지 갈 수 있는 경로가 없을 수도 없음을 꼭 고려할 것
+        boolean[][] visited = new boolean[N][N];
+        Queue<int []> q = new ArrayDeque<>();
+        int[][][] parentMap = new int[N][N][2];
+        boolean pathExist = false;
+        Stack<int []> shortestPathStack = new Stack<>();
+
+
+        q.offer(new int[]{x,y});
+        visited[x][y] = true;
+        // 시작점의 parent는 자기 자신으로 (역추적 시 끝임을 알리기 위함)
+        parentMap[x][y][0] = x;
+        parentMap[x][y][1] = y;
+
+        while(!q.isEmpty()) {
+            int[] now = q.poll();
+            int dx = now[0];
+            int dy = now[1];
+
+            if(dx == parkX && dy == parkY) {
+                pathExist = true;
+                break;
+            }
+
+            for(int d=0; d<4; d++) {
+                int nx = dx + deltas[d][0];
+                int ny = dy + deltas[d][1];
+
+                if(isIn(nx, ny) && !visited[nx][ny] && map[nx][ny] == 0) {
+                    visited[nx][ny] = true; // 방문처리
+                    // 부모 노드 기록
+                    parentMap[nx][ny][0] = dx;
+                    parentMap[nx][ny][1] = dy;
+                    q.offer(new int[] {nx, ny});
+                }
+            }
+        }
+//        for(int i=0; i<N; i++) {
+//            for(int j=0; j<N; j++) {
+//                System.out.print("{"+parentMap[i][j][0]+" , "+parentMap[i][j][1]+"} ");
+//            }
+//            System.out.println();
+//        }
+        if(pathExist) { // 공원까지 가는 경로가 존재
+            int traceX = parkX;
+            int traceY = parkY;
+
+            // 공원부터 시작점까지 역으로 스택에 추가
+            while(true) {
+                shortestPathStack.push(new int[] {traceX, traceY});
+                // 현재 위치가 시작점이라면 루프 종료
+                if(traceX == x && traceY == y) {
+                    break;
+                }
+
+                int prevX = parentMap[traceX][traceY][0];
+                int prevY = parentMap[traceX][traceY][1];
+                traceX = prevX;
+                traceY = prevY;
+            }
+
+//            System.out.print("최단 경로: ");
+//            while(!shortestPathStack.isEmpty()) {
+//                int[] pathPoint = shortestPathStack.pop();
+//                System.out.print("{" + pathPoint[0] + " , " + pathPoint[1] + "} ");
+//            }
+//            System.out.println();
+        } else { // 경로가 존재하지 않는 경우
+            System.out.println(-1);
+        }
+        return shortestPathStack;
+    }
+
+    private static int game(Stack<int []> shortestPathStack) {
+        int[] start = shortestPathStack.pop();
+
+        Medusa medusa = new Medusa(start[0], start[1], new boolean[N][N]);
+
+        while(!shortestPathStack.isEmpty()) {
+            // 메두사 머리 방향 정해주고 이동할 것
+            // 이동한 후 머리 방향 보고 시선을 날릴것
+            // 시선
+        }
+
+
+
+        return -1;
     }
 
     private static class Medusa {
         // 움직이는거
         // 바라보는거
         // 바라본 곳에 전사들이 있는지 체크
+//          메두사 현재 좌표랑 병사랑 비교해서 하면 될듯
 
         int curX;
         int curY;
         boolean[][] visited;
+        char direction;
 
         public Medusa(int curX, int curY, boolean[][] visited) {
             this.curX = curX;
             this.curY = curY;
+            this.direction = '하';// 임시로
             this.visited = visited;
         }
 
@@ -143,8 +274,8 @@ public class CD_메두사와전사들 {
         return 0 <= nx && nx < N && 0 <= ny && ny < N;
     }
 
-    private static boolean isShortest(int nx, int ny) {
-
+    private static int manhattan(int x1, int x2, int y1, int y2) {
+        return Math.abs(x1 - x2) + Math.abs(y1 - y2);
     }
 
 }
