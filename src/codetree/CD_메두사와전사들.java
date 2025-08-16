@@ -3,8 +3,6 @@ package codetree;
 import java.util.*;
 import java.io.*;
 
-import static java.lang.System.exit;
-
 /**
  * @author 김영욱
  * @git
@@ -92,7 +90,7 @@ public class CD_메두사와전사들 {
 
     static int N, M;
     static int parkX, parkY, houseX, houseY;
-    static Warrior[] warriors;
+    static ArrayList<Warrior> warriors;
     static int warriorTotalDist, stonedWarrior, attackedWarrior;
     // 시계방향
     static int[][] deltas = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
@@ -100,13 +98,13 @@ public class CD_메두사와전사들 {
     static int[][] map;
 
 
-    public static void main(String[] args) throws IOException{
+    public static void main(String[] args) throws IOException {
         tokens = new StringTokenizer(input.readLine());
         N = Integer.parseInt(tokens.nextToken());
         M = Integer.parseInt(tokens.nextToken());
 
         map = new int[N][N];
-        warriors = new Warrior[M];
+        warriors = new ArrayList<>();
 
 
         tokens = new StringTokenizer(input.readLine());
@@ -116,62 +114,62 @@ public class CD_메두사와전사들 {
         parkY = Integer.parseInt(tokens.nextToken());
 
         tokens = new StringTokenizer(input.readLine());
-        for(int i=0; i<M; i++) {
+        for (int i = 0; i < M; i++) {
             int wx = Integer.parseInt(tokens.nextToken());
             int wy = Integer.parseInt(tokens.nextToken());
-            warriors[i] = new Warrior(wx, wy, new boolean[N][N]);
+            warriors.add(new Warrior(wx, wy));
         }
 
-        for(int i=0; i<N; i++) {
+        for (int i = 0; i < N; i++) {
             tokens = new StringTokenizer(input.readLine());
-            for(int j=0; j<N; j++) {
+            for (int j = 0; j < N; j++) {
                 map[i][j] = Integer.parseInt(tokens.nextToken());
             }
         }
 
-        Stack<int []> shortestPathStack = findShortestPath(houseX, houseY);
-        if(!shortestPathStack.isEmpty()) {
+        Stack<int[]> shortestPathStack = findShortestPath(houseX, houseY);
+        if (!shortestPathStack.isEmpty()) {
             game(shortestPathStack);
         }
 
 
     }
 
-    private static Stack<int []> findShortestPath(int x, int y) {
+    private static Stack<int[]> findShortestPath(int x, int y) {
         // 메두사가 공원까지 갈 수 있는 경로가 없을 수도 없음을 꼭 고려할 것
         boolean[][] visited = new boolean[N][N];
-        Queue<int []> q = new ArrayDeque<>();
+        Queue<int[]> q = new ArrayDeque<>();
         int[][][] parentMap = new int[N][N][2];
         boolean pathExist = false;
-        Stack<int []> shortestPathStack = new Stack<>();
+        Stack<int[]> shortestPathStack = new Stack<>();
 
 
-        q.offer(new int[]{x,y});
+        q.offer(new int[]{x, y});
         visited[x][y] = true;
         // 시작점의 parent는 자기 자신으로 (역추적 시 끝임을 알리기 위함)
         parentMap[x][y][0] = x;
         parentMap[x][y][1] = y;
 
-        while(!q.isEmpty()) {
+        while (!q.isEmpty()) {
             int[] now = q.poll();
             int dx = now[0];
             int dy = now[1];
 
-            if(dx == parkX && dy == parkY) {
+            if (dx == parkX && dy == parkY) {
                 pathExist = true;
                 break;
             }
 
-            for(int d=0; d<4; d++) {
+            for (int d = 0; d < 4; d++) {
                 int nx = dx + deltas[d][0];
                 int ny = dy + deltas[d][1];
 
-                if(isIn(nx, ny) && !visited[nx][ny] && map[nx][ny] == 0) {
+                if (isIn(nx, ny) && !visited[nx][ny] && map[nx][ny] == 0) {
                     visited[nx][ny] = true; // 방문처리
                     // 부모 노드 기록
                     parentMap[nx][ny][0] = dx;
                     parentMap[nx][ny][1] = dy;
-                    q.offer(new int[] {nx, ny});
+                    q.offer(new int[]{nx, ny});
                 }
             }
         }
@@ -181,15 +179,15 @@ public class CD_메두사와전사들 {
 //            }
 //            System.out.println();
 //        }
-        if(pathExist) { // 공원까지 가는 경로가 존재
+        if (pathExist) { // 공원까지 가는 경로가 존재
             int traceX = parkX;
             int traceY = parkY;
 
             // 공원부터 시작점까지 역으로 스택에 추가
-            while(true) {
-                shortestPathStack.push(new int[] {traceX, traceY});
+            while (true) {
+                shortestPathStack.push(new int[]{traceX, traceY});
                 // 현재 위치가 시작점이라면 루프 종료
-                if(traceX == x && traceY == y) {
+                if (traceX == x && traceY == y) {
                     break;
                 }
 
@@ -211,17 +209,22 @@ public class CD_메두사와전사들 {
         return shortestPathStack;
     }
 
-    private static int game(Stack<int []> shortestPathStack) {
+    private static int game(Stack<int[]> shortestPathStack) {
         int[] start = shortestPathStack.pop();
 
         Medusa medusa = new Medusa(start[0], start[1], new boolean[N][N]);
 
-        while(!shortestPathStack.isEmpty()) {
-            // 메두사 머리 방향 정해주고 이동할 것
-            // 이동한 후 머리 방향 보고 시선을 날릴것
+        while (!shortestPathStack.isEmpty()) {
+            int[] nextDestination = shortestPathStack.pop();
+            int nx = nextDestination[0];
+            int ny = nextDestination[1];
+            // 이동
+            medusa.move(nx, ny);//굿
+            //전사 있는지 체크하고 없애
             // 시선
+            medusa.visionArea();//병사들 가장 많이 바라볼 수 있는 곳으로 시선 돌리게끔 고쳐야함
+//            시선은...가장 많은 전사들을 볼 수 있는 곳으로 돌린다네 시발..
         }
-
 
 
         return -1;
@@ -231,26 +234,90 @@ public class CD_메두사와전사들 {
         // 움직이는거
         // 바라보는거
         // 바라본 곳에 전사들이 있는지 체크
-//          메두사 현재 좌표랑 병사랑 비교해서 하면 될듯
+        // 메두사 현재 좌표랑 병사랑 비교해서 하면 될듯
 
         int curX;
         int curY;
-        boolean[][] visited;
+        boolean[][] vision;
         char direction;
 
-        public Medusa(int curX, int curY, boolean[][] visited) {
+        public Medusa(int curX, int curY, boolean[][] vision) {
             this.curX = curX;
             this.curY = curY;
             this.direction = '하';// 임시로
-            this.visited = visited;
+            this.vision = vision;
         }
 
-        public void move(int dx, int dy) {
-            int nx = curX + dx;
-            int ny = curY + dy;
+        public void move(int nx, int ny) {
             if (isIn(nx, ny)) {
                 curX = nx;
                 curY = ny;
+            }
+            for(int i=0; i<warriors.size(); i++) {
+                Warrior w = warriors.get(i);
+                if(w.curX == curX && w.curY == curY) {
+                    warriors.remove(w);
+                }
+            }
+        }
+
+        public void visionArea() {
+//           Todo: 석화 범위 안에 들어오면 병사들 위치 체크해서 얼리고, 언 병사 뒤쪽으로 안얼게끔 체크
+            for (int i = 0; i < N; i++) {
+                for (int j = 0; j < N; j++) {
+                    vision[i][j] = false;
+                }
+            }
+            int weight = 1;
+            if (direction == '상' && curX > 0) {
+                for (int i = curX-1; i >= 0; i--) {
+                    for (int j = 0; j < N; j++) {
+                        int leftRange = curY - weight;
+                        int rightRange = curY + weight;
+                        if (leftRange <= j && rightRange >= j) {
+                            vision[i][j] = true;
+                        }
+                    }
+                    weight++;
+                }
+            } else if (direction == '하' && curX < N) {
+                for (int i = curX+1; i < N; i++) {
+                    for (int j = 0; j < N; j++) {
+                        int leftRange = curY - weight;
+                        int rightRange = curY + weight;
+                        if (leftRange <= j && rightRange >= j) {
+                            vision[i][j] = true;
+                        }
+                    }
+                    weight++;
+                }
+            } else if (direction == '좌' && curY > 0) {
+                for (int j = curY-1; j >= 0; j--) {
+                    for (int i = 0; i < N; i++) {
+                        int topRange = curX - weight;
+                        int bottomRange = curX + weight;
+                        if(topRange <= i && bottomRange >= i) {
+                            vision[i][j] = true;
+                        }
+                    }
+                    weight++;
+                }
+            } else if (direction == '우' && curY < N) {
+                for (int j = curY+1; j < N; j++) {
+                    for (int i = 0; i < N; i++) {
+                        int topRange = curX - weight;
+                        int bottomRange = curX + weight;
+                        if(topRange <= i && bottomRange >= i) {
+                            vision[i][j] = true;
+                        }
+                    }
+                    weight++;
+                }
+            }
+        }
+        public void stoneWarrior() {
+            for(Warrior w: warriors) {
+
             }
         }
     }
@@ -258,13 +325,11 @@ public class CD_메두사와전사들 {
     private static class Warrior {
         int curX;
         int curY;
-        boolean[][] visited;
         boolean stone;
 
-        public Warrior(int curX, int curY, boolean[][] visited) {
+        public Warrior(int curX, int curY) {
             this.curX = curX;
             this.curY = curY;
-            this.visited = visited;
             this.stone = false;
         }
     }
