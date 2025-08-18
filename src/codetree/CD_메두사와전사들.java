@@ -173,12 +173,6 @@ public class CD_메두사와전사들 {
                 }
             }
         }
-//        for(int i=0; i<N; i++) {
-//            for(int j=0; j<N; j++) {
-//                System.out.print("{"+parentMap[i][j][0]+" , "+parentMap[i][j][1]+"} ");
-//            }
-//            System.out.println();
-//        }
         if (pathExist) { // 공원까지 가는 경로가 존재
             int traceX = parkX;
             int traceY = parkY;
@@ -196,13 +190,6 @@ public class CD_메두사와전사들 {
                 traceX = prevX;
                 traceY = prevY;
             }
-
-//            System.out.print("최단 경로: ");
-//            while(!shortestPathStack.isEmpty()) {
-//                int[] pathPoint = shortestPathStack.pop();
-//                System.out.print("{" + pathPoint[0] + " , " + pathPoint[1] + "} ");
-//            }
-//            System.out.println();
         } else { // 경로가 존재하지 않는 경우
             System.out.println(-1);
         }
@@ -212,9 +199,10 @@ public class CD_메두사와전사들 {
     private static int game(Stack<int[]> shortestPathStack) {
         int[] start = shortestPathStack.pop();
 
-        Medusa medusa = new Medusa(start[0], start[1], new boolean[N][N]);
+        Medusa medusa = new Medusa(start[0], start[1], new int[N][N]);
 
         while (!shortestPathStack.isEmpty()) {
+            for(Warrior w: warriors) w.stone = false;// 언거 풀고
             int[] nextDestination = shortestPathStack.pop();
             int nx = nextDestination[0];
             int ny = nextDestination[1];
@@ -222,8 +210,9 @@ public class CD_메두사와전사들 {
             medusa.move(nx, ny);//굿
             //전사 있는지 체크하고 없애
             // 시선
-            medusa.visionArea();//병사들 가장 많이 바라볼 수 있는 곳으로 시선 돌리게끔 고쳐야함
-//            시선은...가장 많은 전사들을 볼 수 있는 곳으로 돌린다네 시발..
+            stonedWarrior = medusa.visionArea();//병사들 얼려
+
+            break;
         }
 
 
@@ -238,10 +227,10 @@ public class CD_메두사와전사들 {
 
         int curX;
         int curY;
-        boolean[][] vision;
+        int[][] vision;
         char direction;
 
-        public Medusa(int curX, int curY, boolean[][] vision) {
+        public Medusa(int curX, int curY, int[][] vision) {
             this.curX = curX;
             this.curY = curY;
             this.direction = '하';// 임시로
@@ -253,72 +242,189 @@ public class CD_메두사와전사들 {
                 curX = nx;
                 curY = ny;
             }
-            for(int i=0; i<warriors.size(); i++) {
+            for (int i = 0; i < warriors.size(); i++) {
                 Warrior w = warriors.get(i);
-                if(w.curX == curX && w.curY == curY) {
+                if (w.curX == curX && w.curY == curY) {
                     warriors.remove(w);
                 }
             }
         }
 
-        public void visionArea() {
-//           Todo: 석화 범위 안에 들어오면 병사들 위치 체크해서 얼리고, 언 병사 뒤쪽으로 안얼게끔 체크
-            for (int i = 0; i < N; i++) {
-                for (int j = 0; j < N; j++) {
-                    vision[i][j] = false;
+        public int visionArea() {
+            char[] directionArr = {'상', '하', '좌', '우'};
+            for (Warrior w : warriors) vision[w.curX][w.curY] = -1;
+            int maxCount = 0;
+            int[][] choosenVision = new int[N][N];
+            for (char now : directionArr) { // 일단 범위 켜놓고, 석화 범위에 맞춰서 count
+                int count = 0;
+                int[][] copyVision = findWarriorInRange(now);
+                for(int i=0; i<N; i++) {
+                    for(int j=0; j<N; j++) {
+                        if(copyVision[i][j] == -9) count++;
+                    }
+                }
+                if(maxCount < count) {
+                    maxCount = count;
+                    for(int i=0; i<N; i++) {
+                        for(int j=0; j<N; j++) {
+                            choosenVision[i][j] = copyVision[i][j];
+                        }
+                    }
+                    direction = now;
+                }
+            } // 애들 다 얼린 Vision 나왔음
+            for(int i=0; i<N; i++) {
+                for(int j=0; j<N; j++) {
+                    vision[i][j] = choosenVision[i][j];
+                }
+            }
+            for(Warrior w: warriors) if(vision[w.curX][w.curY] == -9) w.stone = true;
+            return maxCount;
+        }
+
+        public void findUnstonedWarrior(int nowX, int nowY, int[][] copyVision) {
+            //8방향 검사해줘야함
+            if (nowX == curX) {// 세로 위치가 같다
+                if (nowY > curY) {// 병사가 메두사 오른쪽에 있다
+                    for (Warrior w : warriors) {
+                        if (nowX == w.curX && nowY < w.curY) { // 병사보다 오른쪽에 있는 놈은 얼지 않습니다.
+                            copyVision[w.curX][w.curY] = -2;// -1은 병사니까 안어는 병사는 -2로^^
+                        }
+                    }
+                } else {// 병사가 메두사 왼쪽에 있다
+                    for (Warrior w : warriors) {
+                        if (nowX == w.curX && nowY > w.curY) { // 병사보다 왼쪽에 있는 놈은 얼지 않습니다.
+                            copyVision[w.curX][w.curY] = -2;// -1은 병사니까 안어는 병사는 -2로^^
+                        }
+                    }
+                }
+
+            } else if (nowY == curY) {// 가로 위치가 같다
+                if (nowX > curX) {// 병사가 메두사 아래에 있다
+                    for (Warrior w : warriors) {
+                        if (nowY == w.curY && nowX < w.curX) { // 병사보다 더 밑에 있는 놈들은 얼지 않습니다.
+                            copyVision[w.curX][w.curY] = -2;// -1은 병사니까 안어는 병사는 -2로^^
+                        }
+                    }
+                } else {// 병사가 메두사 위에 있다
+                    for (Warrior w : warriors) {
+                        if (nowY == w.curY && nowX > w.curX) { // 병사보다 더 위에 있는 놈은 얼지 않습니다.
+                            copyVision[w.curX][w.curY] = -2;// -1은 병사니까 안어는 병사는 -2로^^
+                        }
+                    }
+                }
+
+            } else {// 대각선
+                if (nowX <= curX && nowY > curY) {// 상,우
+                    for (Warrior w : warriors) {
+                        if (nowX > w.curX && nowY < w.curY) { // 병사보다 상,우 대각선에 있는 병사는 얼지 않는다.
+                            copyVision[w.curX][w.curY] = -2;// -1은 병사니까 안어는 병사는 -2로^^
+                        }
+                    }
+
+                } else if (nowX >= curX && nowY > curY) {// 하,우
+                    for (Warrior w : warriors) {
+                        if (nowX < w.curX && nowY < w.curY) { // 병사보다 하,우 대각선에 있는 병사는 얼지 않는다.
+                            copyVision[w.curX][w.curY] = -2;// -1은 병사니까 안어는 병사는 -2로^^
+                        }
+                    }
+
+                } else if (nowX >= curX && nowY < curY) {// 하,좌
+                    for (Warrior w : warriors) {
+                        if (nowX < w.curX && nowY > w.curY) { // 병사보다 하,좌 대각선에 있는 병사는 얼지 않는다.
+                            copyVision[w.curX][w.curY] = -2;// -1은 병사니까 안어는 병사는 -2로^^
+                        }
+                    }
+
+                } else if (nowX <= curX && nowY < curY) {// 상,좌
+                    for (Warrior w : warriors) {
+                        if (nowX > w.curX && nowY > w.curY) { // 병사보다 상,좌 대각선에 있는 병사는 얼지 않는다.
+                            copyVision[w.curX][w.curY] = -2;// -1은 병사니까 안어는 병사는 -2로^^
+                        }
+                    }
+                }
+            }
+        }
+
+        public int[][] findWarriorInRange(char direction) {
+            int[][] copyVision = new int[N][N];
+            for(int i=0; i<N; i++) {
+                for(int j=0; j<N; j++) {
+                    copyVision[i][j] = vision[i][j];
                 }
             }
             int weight = 1;
             if (direction == '상' && curX > 0) {
-                for (int i = curX-1; i >= 0; i--) {
+                for (int i = curX - 1; i >= 0; i--) {
                     for (int j = 0; j < N; j++) {
                         int leftRange = curY - weight;
                         int rightRange = curY + weight;
                         if (leftRange <= j && rightRange >= j) {
-                            vision[i][j] = true;
+                            if (copyVision[i][j] == -1) { // 병사 위치임
+                                findUnstonedWarrior(i, j, copyVision);
+                                copyVision[i][j] = -9;
+                                continue;
+                            }
+                            copyVision[i][j] = 1;
                         }
                     }
                     weight++;
                 }
             } else if (direction == '하' && curX < N) {
-                for (int i = curX+1; i < N; i++) {
+                for (int i = curX + 1; i < N; i++) {
                     for (int j = 0; j < N; j++) {
                         int leftRange = curY - weight;
                         int rightRange = curY + weight;
                         if (leftRange <= j && rightRange >= j) {
-                            vision[i][j] = true;
+                            if (copyVision[i][j] == -1) { // 병사 위치임
+                                findUnstonedWarrior(i, j, copyVision);
+                                copyVision[i][j] = -9;
+                                continue;
+                            }
+                            copyVision[i][j] = 1;
                         }
                     }
                     weight++;
                 }
             } else if (direction == '좌' && curY > 0) {
-                for (int j = curY-1; j >= 0; j--) {
+                for (int j = curY - 1; j >= 0; j--) {
                     for (int i = 0; i < N; i++) {
                         int topRange = curX - weight;
                         int bottomRange = curX + weight;
-                        if(topRange <= i && bottomRange >= i) {
-                            vision[i][j] = true;
+                        if (topRange <= i && bottomRange >= i) {
+                            if (copyVision[i][j] == -1) { // 병사 위치임
+                                findUnstonedWarrior(i, j, copyVision);
+                                copyVision[i][j] = -9;
+                                continue;
+                            }
+                            copyVision[i][j] = 1;
                         }
                     }
                     weight++;
                 }
             } else if (direction == '우' && curY < N) {
-                for (int j = curY+1; j < N; j++) {
+                for (int j = curY + 1; j < N; j++) {
                     for (int i = 0; i < N; i++) {
                         int topRange = curX - weight;
                         int bottomRange = curX + weight;
-                        if(topRange <= i && bottomRange >= i) {
-                            vision[i][j] = true;
+                        if (topRange <= i && bottomRange >= i) {
+                            if (copyVision[i][j] == -1) { // 병사 위치임
+                                findUnstonedWarrior(i, j, copyVision);
+                                copyVision[i][j] = -9;
+                                continue;
+                            }
+                            copyVision[i][j] = 1;
                         }
                     }
                     weight++;
                 }
             }
-        }
-        public void stoneWarrior() {
-            for(Warrior w: warriors) {
-
+            for(int i=0; i<N; i++) {
+                for(int j=0; j<N; j++) {
+                    if(copyVision[i][j] != -9) copyVision[i][j] = 0;
+                }
             }
+            return copyVision;
         }
     }
 
