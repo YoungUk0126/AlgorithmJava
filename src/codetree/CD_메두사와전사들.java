@@ -91,10 +91,10 @@ public class CD_메두사와전사들 {
     static int N, M;
     static int parkX, parkY, houseX, houseY;
     static ArrayList<Warrior> warriors;
-    static int warriorTotalDist, stonedWarrior, attackedWarrior;
+    static int totalWarriorDist, stonedWarrior, attackedWarrior;
     // 시계방향
     static int[][] deltas = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
-    static int[][] deltasVistion = {{-1, 0}, {-1, 1}, {0, 1}, {1, 1}, {1, 0}, {1, -1}, {0, -1}, {-1, -1}};// 대각선 포함 8방향
+    static int[][] secDeltas = {{0, -1}, {0, 1}, {-1, 0}, {1, 0}};
     static int[][] map;
 
 
@@ -130,9 +130,67 @@ public class CD_메두사와전사들 {
         Stack<int[]> shortestPathStack = findShortestPath(houseX, houseY);
         if (!shortestPathStack.isEmpty()) {
             game(shortestPathStack);
+            System.out.println(builder);
         }
 
 
+    }
+
+
+    private static void game(Stack<int[]> shortestPathStack) {
+        int[] start = shortestPathStack.pop();
+        Medusa medusa = new Medusa(start[0], start[1], new int[N][N]);
+
+        while (!shortestPathStack.isEmpty()) {
+            totalWarriorDist = 0;
+            stonedWarrior = 0;
+            attackedWarrior = 0;
+
+            for (Warrior w : warriors) w.stone = false;// 언거 풀고
+            int[] nextDestination = shortestPathStack.pop();
+            int nx = nextDestination[0];
+            int ny = nextDestination[1];
+            // 이동
+            medusa.move(nx, ny);//굿
+            if (medusa.curX == parkX && medusa.curY == parkY) {
+                System.out.println(0);
+                return;
+            }
+            //전사 있는지 체크하고 없애
+            // 시선
+            stonedWarrior = medusa.visionArea();//병사들 얼려
+
+            for (int i = 0; i < N; i++) {
+                for (int j = 0; j < N; j++) {
+                    if (i == medusa.curX && j == medusa.curY)
+                        System.out.print("3 ");
+                    else System.out.print(medusa.vision[i][j] + " ");
+                }
+                System.out.println();
+            }
+            System.out.print("남은 전사들 좌표: ");
+            for(Warrior w: warriors) System.out.print(w.curX+","+w.curY+" ");
+            System.out.println();
+            System.out.println();
+
+            int beforeDied = warriors.size();
+            int diedAfterMoveCount = 0;
+
+
+//            첫번째 이동
+            for (Warrior w : warriors) if (!w.stone) totalWarriorDist += w.firstMove(medusa);
+//            메두사 만나면 삭제
+            warriors.removeIf(w -> medusa.curX == w.curX && medusa.curY == w.curY);
+
+//            두번째 이동
+            for (Warrior w : warriors) if (!w.stone) totalWarriorDist += w.secondMove(medusa);
+            warriors.removeIf(w -> medusa.curX == w.curX && medusa.curY == w.curY);
+
+            diedAfterMoveCount = warriors.size();// 메두사 만나서 얼마나 삭제됐는지 비교한 후 더해줌
+            attackedWarrior += beforeDied - diedAfterMoveCount;
+
+            builder.append(totalWarriorDist).append(" ").append(stonedWarrior).append(" ").append(attackedWarrior).append("\n");
+        }
     }
 
     private static Stack<int[]> findShortestPath(int x, int y) {
@@ -196,28 +254,6 @@ public class CD_메두사와전사들 {
         return shortestPathStack;
     }
 
-    private static int game(Stack<int[]> shortestPathStack) {
-        int[] start = shortestPathStack.pop();
-
-        Medusa medusa = new Medusa(start[0], start[1], new int[N][N]);
-
-        while (!shortestPathStack.isEmpty()) {
-            for(Warrior w: warriors) w.stone = false;// 언거 풀고
-            int[] nextDestination = shortestPathStack.pop();
-            int nx = nextDestination[0];
-            int ny = nextDestination[1];
-            // 이동
-            medusa.move(nx, ny);//굿
-            //전사 있는지 체크하고 없애
-            // 시선
-            stonedWarrior = medusa.visionArea();//병사들 얼려
-
-            break;
-        }
-
-
-        return -1;
-    }
 
     private static class Medusa {
         // 움직이는거
@@ -242,43 +278,31 @@ public class CD_메두사와전사들 {
                 curX = nx;
                 curY = ny;
             }
-            for (int i = 0; i < warriors.size(); i++) {
-                Warrior w = warriors.get(i);
-                if (w.curX == curX && w.curY == curY) {
-                    warriors.remove(w);
-                }
-            }
+            warriors.removeIf(w -> w.curX == curX && w.curY == curY);
         }
 
         public int visionArea() {
             char[] directionArr = {'상', '하', '좌', '우'};
-            for (Warrior w : warriors) vision[w.curX][w.curY] = -1;
             int maxCount = 0;
-            int[][] choosenVision = new int[N][N];
             for (char now : directionArr) { // 일단 범위 켜놓고, 석화 범위에 맞춰서 count
                 int count = 0;
                 int[][] copyVision = findWarriorInRange(now);
-                for(int i=0; i<N; i++) {
-                    for(int j=0; j<N; j++) {
-                        if(copyVision[i][j] == -9) count++;
+                for (int i = 0; i < N; i++) {
+                    for (int j = 0; j < N; j++) {
+                        if (copyVision[i][j] == -9) count++;
                     }
                 }
-                if(maxCount < count) {
+                if (maxCount < count) {
                     maxCount = count;
-                    for(int i=0; i<N; i++) {
-                        for(int j=0; j<N; j++) {
-                            choosenVision[i][j] = copyVision[i][j];
+                    for (int i = 0; i < N; i++) {
+                        for (int j = 0; j < N; j++) {
+                            vision[i][j] = copyVision[i][j];
                         }
                     }
                     direction = now;
                 }
             } // 애들 다 얼린 Vision 나왔음
-            for(int i=0; i<N; i++) {
-                for(int j=0; j<N; j++) {
-                    vision[i][j] = choosenVision[i][j];
-                }
-            }
-            for(Warrior w: warriors) if(vision[w.curX][w.curY] == -9) w.stone = true;
+            for (Warrior w : warriors) if (vision[w.curX][w.curY] == -9) w.stone = true;
             return maxCount;
         }
 
@@ -348,11 +372,7 @@ public class CD_메두사와전사들 {
 
         public int[][] findWarriorInRange(char direction) {
             int[][] copyVision = new int[N][N];
-            for(int i=0; i<N; i++) {
-                for(int j=0; j<N; j++) {
-                    copyVision[i][j] = vision[i][j];
-                }
-            }
+            for (Warrior w : warriors) copyVision[w.curX][w.curY] = -1;
             int weight = 1;
             if (direction == '상' && curX > 0) {
                 for (int i = curX - 1; i >= 0; i--) {
@@ -363,9 +383,7 @@ public class CD_메두사와전사들 {
                             if (copyVision[i][j] == -1) { // 병사 위치임
                                 findUnstonedWarrior(i, j, copyVision);
                                 copyVision[i][j] = -9;
-                                continue;
                             }
-                            copyVision[i][j] = 1;
                         }
                     }
                     weight++;
@@ -379,9 +397,7 @@ public class CD_메두사와전사들 {
                             if (copyVision[i][j] == -1) { // 병사 위치임
                                 findUnstonedWarrior(i, j, copyVision);
                                 copyVision[i][j] = -9;
-                                continue;
                             }
-                            copyVision[i][j] = 1;
                         }
                     }
                     weight++;
@@ -395,9 +411,7 @@ public class CD_메두사와전사들 {
                             if (copyVision[i][j] == -1) { // 병사 위치임
                                 findUnstonedWarrior(i, j, copyVision);
                                 copyVision[i][j] = -9;
-                                continue;
                             }
-                            copyVision[i][j] = 1;
                         }
                     }
                     weight++;
@@ -411,17 +425,10 @@ public class CD_메두사와전사들 {
                             if (copyVision[i][j] == -1) { // 병사 위치임
                                 findUnstonedWarrior(i, j, copyVision);
                                 copyVision[i][j] = -9;
-                                continue;
                             }
-                            copyVision[i][j] = 1;
                         }
                     }
                     weight++;
-                }
-            }
-            for(int i=0; i<N; i++) {
-                for(int j=0; j<N; j++) {
-                    if(copyVision[i][j] != -9) copyVision[i][j] = 0;
                 }
             }
             return copyVision;
@@ -437,6 +444,50 @@ public class CD_메두사와전사들 {
             this.curX = curX;
             this.curY = curY;
             this.stone = false;
+        }
+
+        public int firstMove(Medusa medusa) {
+
+            int curManhattan = 0;
+            int nextManhattan = 0;
+
+            for (int d = 0; d < 4; d++) {
+                int nx = curX + deltas[d][0];
+                int ny = curY + deltas[d][1];
+
+                if (isIn(nx, ny)) {
+                    curManhattan = manhattan(medusa.curX, curX, medusa.curY, curY);
+                    nextManhattan = manhattan(medusa.curX, nx, medusa.curY, ny);
+                    if (nextManhattan < curManhattan) {
+                        curX = nx;
+                        curY = ny;
+
+                        return 1;
+                    }
+                }
+            }
+            return 0;
+        }
+
+        public int secondMove(Medusa medusa) {
+            int curManhattan = 0;
+            int nextManhattan = 0;
+
+            for (int d = 0; d < 4; d++) {
+                int nx = curX + secDeltas[d][0];
+                int ny = curY + secDeltas[d][1];
+
+                if (isIn(nx, ny)) {
+                    curManhattan = manhattan(medusa.curX, curX, medusa.curY, curY);
+                    nextManhattan = manhattan(medusa.curX, nx, medusa.curY, ny);
+                    if (nextManhattan < curManhattan) {
+                        curX = nx;
+                        curY = ny;
+                        return 1;
+                    }
+                }
+            }
+            return 0;
         }
     }
 
